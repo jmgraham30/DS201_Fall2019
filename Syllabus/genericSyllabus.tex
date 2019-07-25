@@ -1,0 +1,168 @@
+\documentclass[12pt]{article}
+\textwidth=7in
+\textheight=9.5in
+\topmargin=-1in
+\headheight=0in
+\headsep=.5in
+\hoffset  -.85in
+
+\pagestyle{empty}
+
+\usepackage{amsmath}
+\usepackage{url}
+\usepackage{soul,color}
+
+\renewcommand{\thefootnote}{\fnsymbol{footnote}}
+\begin{document}
+
+\begin{center}
+{ \ \ \ \ \ DS 201 \ \ \ \ \ \ \\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \  Introduction \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ to \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ Data Science \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ }
+\end{center}
+
+\setlength{\unitlength}{1in}
+
+\begin{picture}(6,.1)
+\put(0,0) {\line(1,0){6.25}}
+\end{picture}
+
+\renewcommand{\arraystretch}{2}
+
+\vskip.20in
+
+\noindent\textbf{Instructor:} Name
+
+\vskip.20in
+\noindent\textbf{Contact:} Email
+
+\vskip.20in
+\noindent\textbf{Office Hours:} Days/Times (Location)
+
+\vskip.20in
+\noindent\textbf{Textbooks:} \emph{Data Science and Predictive Analytics} by Ivo D.\ Dinov (available electronically through Weinberg Memorial Library), \emph{Introduction to Data Science} by Rafael A.\ Irizarry (available online \url{https://rafalab.github.io/dsbook/}), \emph{R for Data Science} by Grolemund and Wickham (available online \url{https://r4ds.had.co.nz/}), and \emph{An Introduction to Statistical Learning with Applicantions in R} by Gareth James, Daniela Witten, Trevor Hastie and Robert Tibshirani (available electronically through Weinberg Memorial Library)
+
+\vskip.20in
+\noindent\textbf{Additional References:} \emph{Programming Skills for Data Science} by Michael Freeman and Joel Ross,\emph{Probability and Statistics for Data Science} by Norman Matloff, and \emph{Applied Predictive Modeling} by Max Kuhn and Kjell Johnson (available electronically through Weinberg Memorial Library)
+
+\vskip.20in
+\noindent\textbf{Course Webpage:}
+
+\vskip.20in
+\noindent\textbf{Prerequisites:}
+
+\vskip.20in
+\noindent\textbf{Course Description:} This course aims to provide students with an introduction to data science and the ``data science'' way of thinking. That is, we will explore principles for ``drawing useful conclusions from large and diverse data sets through exploration, prediction, and inference.'' Specifically, the course will introduce students to the basic data science workflow following current best practices, and address computational or algorithmic ways to think about data and learning from data.  A heavy emphasis will be placed on data visualization, exploratory data analysis, and foundational modeling principles.
+
+\vskip.20in
+\noindent\textbf{Course Goals:}
+The goal of this course is for students
+\begin{enumerate}
+  \item to gain confidence and foundational skills in implementing and applying the typical data science workflow: import, explore, format, transform, analyze, model, and draw conclusions from data.
+  \item to gain experience in effectively presenting and communicating results or findings based on an implementation or application of the typical data science workflow.
+\end{enumerate}
+
+\newpage
+
+\vskip.20in
+\noindent\textbf{Student Learning Objectives and Assessment:}
+  \begin{table}[h!]
+    \centering
+    \begin{tabular}{|p{4in}|p{3in}|}
+      \hline
+      After taking this course, the student should be able to: & Methods of assessment \\
+      \hline
+      1.\ import, format, and transform common data-set types programmatically and build effective visualizations of data.  & Programming competency assessments, homework, and project.  \\
+    \hline
+      2.\ apply appropriate exploration and modeling techniques to learn from data. & Programming competency assessments, homework, and project. \\
+      \hline
+      3.\ present and communicate results obtained via data analysis in an effective manner. & Homework, and project. \\
+      \hline
+    \end{tabular}
+  \end{table}
+
+\vskip.20in
+\noindent\textbf{Grade Policy:} The course grade will be based on homework assignments (10\%), programming competency assessments (10\%), and a semester long project in the form of a data science case study (80\%). The data science case study project will be broken up into a number of sub-assignments so that work on the project will span the entire semester, with various portions of the project due at different times throughout the semester.
+
+\vskip.20in
+\noindent\textbf{Grading}: Letter grades will be assigned based on the following scale:
+\begin{align*}
+&\text{Grade Range}   &\text{Letter Grade} \\
+\hline
+&\text{Below}\ 60  &F \\
+&60-62  &D\\
+&63-66  &D+\\
+&67-69  &C-\\
+&70-76  &C\\
+&77-79  &C+ \\
+&80-82  &B-\\
+&83-86  &B\\
+&87-89  &B+\\
+&90-92  &A-\\
+&93-100 &A
+\end{align*}
+
+\vskip.20in
+\noindent\textbf{Attendance:} It is very important that you attend class regularly. In fact, much of the course content will be developed through outside assigned reading, whereas class time will be devoted largely to practice in the computer implementation of the various aspects of the data science workflow.  Thus, it is the expectation of the instructor that students will participate in class activities. It is also extremely important for students to come prepared each day bringing their computers and having completed all assigned readings. Please be courteous and refrain from using your cell phone (talking or texting) or other electronic devices during class.
+
+
+\vskip.20in
+\noindent\textbf{Homework:} Students will be asked to complete a number of homework assignments throughout the semester. Homework will typically consist of conceptual questions requiring written responses or computational questions requiring students to write and/or implement code. The homework assignments are meant to assess understanding of and reinforce the assigned readings, and to provide practice in carrying out basic computations. Homework will make up 10\% of the overall course grade and assignments will be posted on D2L.
+
+\vskip.20in
+\noindent\textbf{Programming Competency Assessments:}  Throughout the semester students will be asked to demonstrate their competence in essential data science programming skills. At various times, students will be asked to meet individually with the instructor at which time the student will be asked to complete a pre-specified programming task. Students must successfully complete the assigned programming task, if a students fails to successfully complete the assigned task then they will be asked to return at a later time to make another attempt. A student successfully completing a task on the first try will be awarded ten points, one point will be deducted for each additional attempt required to successfully complete the task. The failure of a student to meet with the instructor in a timely fashion to complete a programming competency assessment will result in a grade of zero for the assignment.  Programming competency assessments will make up 10\% of the overall course grade.
+
+
+\vskip.20in
+\noindent\textbf{Project:} Students will develop a data science case study. The goal of the assignment is for students to implement the typical data science workflow on an approved data set(s) of their choosing. The final product will be a project notebook and a written report which includes a detailed explanation of the results obtained from an analysis of the data set(s) and a complete and professional description of the process used to obtain the presented results. All computer code must be thoroughly documented and included along with the submitted report. This project will make up 80\% of the overall course grade. A detailed description of what constitutes a data science case study project and the requirements for completing the assignment will be posted on D2L. The data science case study project will be broken up into a number of sub-assignments. The various parts of the assignment together with their grade proportions and tentative due dates are:
+\begin{enumerate}
+    \item selection and approval of a data set(s) - 5\% (due $\approx$ September 13)
+    \item written data description - 5\% (due $\approx$ September 20)
+    \item background, problem description, and objectives - 10\% (due $\approx$ October 4)
+    \item programmatically loading, formatting, and transforming of the data set(s) - 12\% (due $\approx$ October 11)
+    \item data visualization and summarization - 12\% (due $\approx$ October 25)
+    \item modeling of the data - 12\% (due $\approx$ November 15)
+    \item model evaluation - 12\% (due $\approx$ November 22)
+    \item conclusions and report initial draft - 12\% (due $\approx$ December 6)
+    \item report final version - 20\%  (due $\approx$ December 11)
+\end{enumerate}
+Students will be allowed to revise earlier parts of the project assignment up until the final draft submission in order to receive (some but not all) points back.
+
+\vskip.20in
+\noindent\textbf{Tentative Course Schedule:}
+\begin{enumerate}
+    \item Answer(s) to “What is data science?” ($\approx$ 1-2 classes)
+
+     \item Data, what it is, where to get it, different types, common data terminology and conventions ($\approx$ 2-3 classes)
+
+    \item Tools of the trade, i.e. essential computation, programming, development and version control ($\approx$ 5-6 classes)
+
+    \item Importing and exporting data ($\approx$ 2 classes)
+
+    \item Simple visualization ($\approx$ 3 classes)
+
+    \item Wrangling, i.e. formatting and working with the data ($\approx$ 3 classes)
+
+    \item Exploratory data analysis (EDA) and simple stats, \emph{e.g.}\ essential background in correlation and regression ($\approx$ 4 classes)
+
+    \item Modeling ($\approx$ 12 classes)
+
+
+    \item On presentation of results and projects ($\approx$ 6 classes)
+
+\end{enumerate}
+
+
+\vskip.20in
+\noindent\textbf{Important Dates}:
+\begin{center} \begin{minipage}{5in}
+\begin{flushleft}
+Classes begin \dotfill  \\
+Last day to add classes \dotfill  \\
+Last day for 100\% tuition refund \dotfill  \\
+Last day to drop with no grade \dotfill  \\
+Semester midpoint \dotfill  \\
+Last day to withdraw with ``W'' \dotfill
+\end{flushleft}
+\end{minipage}
+\end{center}
+
+\end{document}
