@@ -71,3 +71,10 @@ summary(gapminder)
 ```
 
 **Question:** What information is given in the output of the call to summary()? 
+
+If you ever want to know what are R command does, you can access the help file for the command with ? as for example in the following
+```{r}
+?summary
+```
+
+

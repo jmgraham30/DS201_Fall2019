@@ -1,0 +1,68 @@
+---
+title: "Homework 1 Notebook"
+author: "Name"
+date: "08-30-2019"
+output: html_notebook
+---
+
+
+1) Read the "What is Data Science?" article posted on D2L and respond to the following prompts.
+
+a) Based on your reading of the posted article, compare and contrast coputer science, data science, and real science. 
+
+b) What interesting questions can you ask and answer with the baseball data from section 1.2.1 of the reading? 
+
+c) What interesting questions can you ask and answer with the movie data from section 1.2.2 of the reading? 
+
+d) Describe what is meant by a taxonomy of the properties of data discussed in section 1.3 of the reading. 
+
+e) Define classification and provide an example. 
+
+f) Define regression and provide an example. 
+
+g) What is kaggle? 
+
+2) Complete the swirl lesson 1: Basic Building Blocks from the R Programming swirl course and respond to the following prompts. 
+
+a) What is the assignment operator in R? 
+
+b) What is a data structure and what is a numeric vector in R? 
+
+c) True or False: In R a single number is considered a vector of length one. 
+
+d) How do you create a vector in R? 
+
+e) How do you access R's built-in help files? 
+
+f) In R is it possible to combine vectors to create a new vector? If so, how? 
+
+g) In the following R code block, create a vector that contains the values 2, 7, 82.3 and assign it to a variable called my_vect. 
+
+```{r}
+# type R code here
+```
+
+
+h) After running your code for part g), run the code below and explain the output. 
+
+```{r}
+my_vect^2
+```
+
+
+i) What happens in R if you add two vectors of different lengths? Run the following code and explain the output.
+
+```{r}
+x <- c(1,2,3,5)
+y <- c(-2,3)
+x + y
+```
+
+Now explain the output from this code
+```{r}
+x <- c(1,2,3,4,5)
+y <- c(-1,2)
+x + y
+```
+
+
