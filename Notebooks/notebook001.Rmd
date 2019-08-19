@@ -49,6 +49,12 @@ The str command in R will provide information about what is contained
 str(gapminder)
 ```
  
+ 
+Let's learn more about what the str command is doing
+```{r}
+?str
+```
+ 
  **Note:** In R, the gapminder data is stored as a data frame (actually a tibble). We will come back and talk in detail about the meaning and significance of this. There are two important points to take note of now though:
  
  1) the data is "rectangular"
@@ -65,6 +71,12 @@ We can also view the last few rows of the gapminder dataset
 tail(gapminder)
 ```
 
+Notice that the columns of a data frame in R have names
+```{r}
+names(gapminder)
+```
+
+
 The summary() function provides summary statistics for all of the variables is a dataset
 ```{r}
 summary(gapminder)
@@ -77,4 +89,44 @@ If you ever want to know what are R command does, you can access the help file f
 ?summary
 ```
 
+If you want to access an individual variable from a dataset (stored as a data frame) in R you can use the $ opertor. For example
+```{r}
+gapminder$lifeExp
+```
 
+
+This references the lifeExp variable of the gapminder data. 
+```{r}
+ str(gapminder$lifeExp)
+```
+Compare this output with what we obtained previously when we called str on gapminder. The gapminder dataset has a tabular structure but the lifeExp variable referenced with gapminder$lifeExp is not a data frame but a numeric vector. 
+
+We can compute the mean (or average) of a numeric vector with the mean command
+```{r}
+mean(gapminder$lifeExp)
+```
+Notice that this is one of the values reported in the output to the summary function call on gapminder. 
+
+R has many built-in commands (functions) that can be used to compute values from data. Another example is the table function which provides a type of summary for a **categorical** variable. For example
+```{r}
+table(gapminder$continent)
+```
+
+**Question:** What is the meaning of the output from this code? 
+ 
+R also has a lot of built-in graphing capability. For example,
+```{r}
+hist(gapminder$lifeExp)
+```
+This shows a histogram for the values of the lifeExp (continuous) variable. 
+
+```{r}
+barplot(table(gapminder$continent))
+```
+This shows a bar plot of the continent (categorical) variable. 
+
+**Question:** What is the difference between a bar plot and a histogram? 
+
+Soon, we will learn a great deal about data visualization using R. 
+
+We end by noting that R is built around **functions**, these are objects that take some number (possibly zero) of input values and return a value. There are many functions built into base R. In addition, there are very many user-developed packages that contain a variety of functions that extend R far beyond its base capabilities. This is what makes R truly powerful. One very interesting package is the swirl package. This package contains functions that allow you to learn R from within R itself. We will look at an example swirl lesson.  
