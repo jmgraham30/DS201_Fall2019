@@ -42,4 +42,32 @@ Raw data comes in many different forms, e.g. numerical measurements, text, image
 
 ## gapminder in R
 
+We can look at an excerpt of the gapminder dataset that is contained in the [gapminder package](https://cran.r-project.org/web/packages/gapminder/README.html). 
 
+The str command in R will provide information about what is contained
+```{r}
+str(gapminder)
+```
+ 
+ **Note:** In R, the gapminder data is stored as a data frame (actually a tibble). We will come back and talk in detail about the meaning and significance of this. There are two important points to take note of now though:
+ 
+ 1) the data is "rectangular"
+ 
+ 2) the different types of data are represented differently
+
+We can view the first few rows of the gapminder dataset 
+```{r}
+head(gapminder)
+```
+
+We can also view the last few rows of the gapminder dataset
+```{r}
+tail(gapminder)
+```
+
+The summary() function provides summary statistics for all of the variables is a dataset
+```{r}
+summary(gapminder)
+```
+
+**Question:** What information is given in the output of the call to summary()? 
