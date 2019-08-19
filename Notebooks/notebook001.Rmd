@@ -3,3 +3,43 @@ title: "R Notebook"
 output: html_notebook
 ---
 
+```{r,warning=FALSE,message=FALSE,echo=FALSE}
+library(tidyverse)
+library(gapminder)
+library(knitr)
+```
+
+# Introduction
+
+This course aims to provide students with an introduction to [data science](https://en.wikipedia.org/wiki/Data_science). Specifically, the course will introduce students to the basic data science workflow following current best practices, and address computational or algorithmic ways to think about data and learning from data.  A heavy emphasis will be placed on [data visualization](https://en.wikipedia.org/wiki/Data_visualization), [exploratory data analysis](https://en.wikipedia.org/wiki/Exploratory_data_analysis), and foundational [statistical modeling](https://en.wikipedia.org/wiki/Statistical_model) and [machine learning](https://en.wikipedia.org/wiki/Machine_learning) principles.
+
+## What is Data Science?
+
+![ ](../Figures/DSvenn.png){width=50%}
+
+
+> Data Science is an emerging new field that (1) is extremely transdisciplinary - bridging between the theoretical, computational, experimental, and biosocial areas; (2) deals with enormous amounts of complex, incongruent, and dynamical data from multiple sources; and (3) aims to develop algorithms, methods, tools, and services capable of ingesting such datasets and generating semiautomated decision support systems. The latter can mine the data for patterns or motifs, predict expected outcomes, suggest clustering or labeling of retrospective or prospective observations, compute data signatures or fingerprints, extract valuable information, and offer evidence-based actionable knowledge. Data science techniques often involve manipulation ([wrangling](https://en.wikipedia.org/wiki/Data_wrangling)), data harmonization and aggregation, exploratory or confirmatory data analyses, [predictive analytics](https://en.wikipedia.org/wiki/Predictive_analytics), [validation](https://en.wikipedia.org/wiki/Statistical_model_validation), and fine-tuning. 
+
+From Chapter 1 of Dinov, ID. (2018) *Data Science and Predictive Analytics: Biomedical and Health Applications using R*, see also the accompanying [website](http://socr.umich.edu/people/dinov/DSPA_Courses.html).
+
+## The Data Science Workflow
+
+![ ](../Figures/data-science-solutions-workflow.jpg){width=75%}
+
+The successful implementation of the data science workflow requires the use of an appropriate technological toolset. In this course an emphasis will be placed using [R](https://www.r-project.org/), [RStudio](https://www.rstudio.com/), and [RMarkdown](https://rmarkdown.rstudio.com/) to implement the data science workflow. 
+
+
+![ ](../Figures/tidyDSworkflow.png){width=70%}
+
+
+A very commonly used alternative to the R-centric tools we will use is the Python-centric tollkit made up of [Python](https://www.python.org/), [Jupyter](https://jupyter.org/), and a host of Python libraries for data science. For those that are interested, the book [Pandas for Everyone](https://www.pearson.com/us/higher-education/program/Chen-Pandas-for-Everyone-Python-Data-Analysis/PGM335102.html) is a great reference that parallels much of what we will do in the course but using Python instead of R.   
+
+
+## The Data in Data Science
+
+Raw data comes in many different forms, e.g. numerical measurements, text, images, videos, sounds which makes it difficult to precisely answer "what is data?". However, in many tpical applications, the data one works with will have some definite structure or type to it and it is very useful to being to get to know about this.  Let's look at a motivating example from [gapminder](https://www.gapminder.org/).  
+
+
+## gapminder in R
+
+
