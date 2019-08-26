@@ -1,0 +1,91 @@
+---
+title: "Data: Getting it and Getting it into R"
+output: html_notebook
+---
+
+# Getting Data
+
+There is no shortage of data sources. It's a much bigger problem to find appropriate data of sufficient quality in order to solve the problems or answer the questions that you are most interested in. For the purposes of finding good examples and providing possible starting points for course projects, here are some links to some sources of interesting data:
+
+* [Gapminder data](https://www.gapminder.org/data/)
+
+* [fivethirtyeight data](https://data.fivethirtyeight.com/), see also their GitHub [fivethirtyeight](https://github.com/fivethirtyeight/data)
+
+* [UCI Machine Learning Repository](https://archive.ics.uci.edu/ml/index.php)
+
+* [Kaggle](https://www.kaggle.com/)
+
+
+
+## Web Scraping for Data
+
+One can obtain a lot of data via [web scraping](https://en.wikipedia.org/wiki/Web_scraping). That is, the (typically automated) extraction of data from a website or websites. We will defer a discussion of this until later. If you want to take a look into this on your own, here are some online tutorials for web scraping with both R and Python:
+
+* [web scraping with R](https://www.analyticsvidhya.com/blog/2017/03/beginners-guide-on-web-scraping-in-r-using-rvest-with-hands-on-knowledge/)
+
+* [web scraping with Python](https://realpython.com/python-web-scraping-practical-introduction/)
+
+## R Packages Contain Data
+
+Many R packages come with some built-in datasets. You can determine what datasets are available with the data() function. For example, the following command will show us a list of the datasets provided in base R (because at this point we do not have any other packages loaded). 
+```{r}
+data()
+```
+
+Notice the statement at the bottom of the R data sets window: "Use ‘data(package = .packages(all.available = TRUE))’to list the data sets in all *available* packages."
+
+We can learn about details of datasets in R with the help command. For example:
+```{r}
+?AirPassengers
+```
+
+Now lets load the gapminder and fivethirtyeight packages and call data() again.
+```{r}
+library(gapminder)
+library(fivethirtyeight)
+data()
+```
+
+What all does the data() function do? 
+```{r}
+?data
+```
+
+We see from the data function help page that to find out about data in a particular package, we can do this:
+```{r}
+try(data(package="ggplot2"))
+```
+
+
+# Getting Data into R
+
+We have seen that R packages provide one way to get data into R and web scraping with R is another way that we will discuss later. It is also very easy to load data that is stored in an external file into R. How you do this exactly depends on the format in which the data file is saved and also the structure in which the data is saved. 
+
+For example, suppose that we are interested in data that is stored in a [comma-separated values (CSV) file](https://en.wikipedia.org/wiki/Comma-separated_values). This is the case for the avcoado prices dataset save in the Data folder. In order to load this data, we simply do the following:
+```{r}
+avocado_df <- read.csv("../Data/AvocadoPrices.csv")
+```
+
+Let's inspect this data:
+```{r}
+head(avocado_df)
+```
+
+**Exercise:** Read the help page for the read.csv function to see what exactly it does. 
+
+The read.csv function works just as well to read raw csv files from the web. For example, navigate the [here](https://github.com/fivethirtyeight/data/tree/master/ahca-polls), click on the csv file and then the "raw" tab. Then to read in this data, we do this:
+```{r}
+ahca_df <- read.csv("https://raw.githubusercontent.com/fivethirtyeight/data/master/ahca-polls/ahca_polls.csv")
+```
+
+Again, let's inspect:
+```{r}
+head(ahca_df)
+```
+
+**Note:** Notice that the data was read in as a data frame. Pay close attention to the type in which that data is stored. We will talk more about R data types later. There are also functions such as write.csv() that allow you to write an R object to a file on your computer. 
+
+
+R has many different methods for reading, writing, and representing data. It is not really possible for us to cover in detail all of these but it is usually pretty easy to figure out how to read and manage a particular type of data in R via a quick google search. 
+
+Let's take a short pause form R to talk about [version control](https://en.wikipedia.org/wiki/Version_control), [git](https://git-scm.com/), and [GitHub](https://github.com/). 
