@@ -4,9 +4,7 @@ output: html_notebook
 ---
 
 ```{r,warning=FALSE,message=FALSE,echo=FALSE}
-library(tidyverse)
 library(gapminder)
-library(knitr)
 ```
 
 # Introduction
