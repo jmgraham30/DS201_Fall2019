@@ -1,6 +1,6 @@
 # DS 201 Introduction to Data Science - Fall 2019
 
-## This is a github repository for course content for DS 201 Introduction to Data Science.
+## This is a GitHub repository of course content for DS 201 Introduction to Data Science.
 
 ### Course Information
 
