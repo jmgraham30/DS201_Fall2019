@@ -9,21 +9,13 @@ There is no shortage of data sources. It's a much bigger problem to find appropr
 
 * [Gapminder data](https://www.gapminder.org/data/)
 
+* [Government Data](https://www.data.gov/)
+
 * [fivethirtyeight data](https://data.fivethirtyeight.com/), see also their GitHub [fivethirtyeight](https://github.com/fivethirtyeight/data)
 
 * [UCI Machine Learning Repository](https://archive.ics.uci.edu/ml/index.php)
 
 * [Kaggle](https://www.kaggle.com/)
-
-
-
-## Web Scraping for Data
-
-One can obtain a lot of data via [web scraping](https://en.wikipedia.org/wiki/Web_scraping). That is, the (typically automated) extraction of data from a website or websites. We will defer a discussion of this until later. If you want to take a look into this on your own, here are some online tutorials for web scraping with both R and Python:
-
-* [web scraping with R](https://www.analyticsvidhya.com/blog/2017/03/beginners-guide-on-web-scraping-in-r-using-rvest-with-hands-on-knowledge/)
-
-* [web scraping with Python](https://realpython.com/python-web-scraping-practical-introduction/)
 
 ## R Packages Contain Data
 
@@ -32,7 +24,7 @@ Many R packages come with some built-in datasets. You can determine what dataset
 data()
 ```
 
-Notice the statement at the bottom of the R data sets window: "Use ‘data(package = .packages(all.available = TRUE))’to list the data sets in all *available* packages."
+Notice the statement at the bottom of the R data sets window: "Use data(package = .packages(all.available = TRUE)) to list the data sets in all *available* packages."
 
 We can learn about details of datasets in R with the help command. For example:
 ```{r}
@@ -55,6 +47,16 @@ We see from the data function help page that to find out about data in a particu
 ```{r}
 try(data(package="ggplot2"))
 ```
+
+
+
+## Web Scraping for Data
+
+One can obtain a lot of data via [web scraping](https://en.wikipedia.org/wiki/Web_scraping). That is, the (typically automated) extraction of data from a website or websites. We will defer a discussion of this until later. If you want to take a look into this on your own, here are some online tutorials for web scraping with both R and Python:
+
+* [web scraping with R](https://www.analyticsvidhya.com/blog/2017/03/beginners-guide-on-web-scraping-in-r-using-rvest-with-hands-on-knowledge/)
+
+* [web scraping with Python](https://realpython.com/python-web-scraping-practical-introduction/)
 
 
 # Getting Data into R
