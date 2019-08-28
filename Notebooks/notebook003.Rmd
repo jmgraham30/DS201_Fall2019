@@ -1,0 +1,163 @@
+---
+title: "Working with Data Frames"
+output: html_notebook
+---
+
+# Introduction to Data Frames
+
+We have seen that "tabular" data such as is typically entered into an excel spreadsheet is represented in R as a data frame. In fact, a data frame is the most common way of storing data in R. Here we will look further into the data frame structure. 
+
+
+In R a **data frame** is a **list** of **vectors** that all have the same length. Remember this forever! The point here is that in order to fully understand data frames, we have to know something about vectors and lists. 
+
+# Vectors and Lists
+
+Vectors (at least atomic vectors) should be reasonably familiar to you from the swirl lessons. Just as a quick recap, a (atomic) vector is an ordered collection of objects that all have the same type. Vectors are created via concatenation c(). 
+
+Here are some examples:
+```{r}
+a_vect <- c(1.1,-2.2,3.7)
+b_vect <- c("a","b","c","d")
+c_vect <- c(1L,2L,3L,4L,5L)
+```
+
+Notice the following:
+```{r}
+print(typeof(a_vect)) # says that each element of a_vect is a double 
+print(typeof(b_vect)) # says that each element of b_vect is a character 
+print(typeof(c_vect)) # says that each element of c_vect is an integer 
+```
+
+What happens if we try to create a vector that has different types of elements? For example
+```{r}
+aa_vect <- c(1.2,1L,"cat")
+```
+
+Let's check the type of aa_vect:
+```{r}
+typeof(aa_vect)
+```
+
+
+**Question:** What happened here? 
+
+The important point to take away is that there is a heirarchy of types in R and the consequence of this is that if you try to mix types in an vector (where every element must be of the same type) you get **type conversion.**
+
+Note that in instances of type conversion, integers get converted to doubles and doubles get converted to characters. 
+
+**Question:** Why do you think it could be a problem for say a double to get converted to a character somewhere in a data analysis? 
+
+It is possible to manually convert types, for example:
+```{r}
+bb <- 2.3
+print(typeof(bb))
+print(as.character(bb))
+print(as.integer(bb))
+```
+
+**Question** Explain the previous results. 
+
+Lists are handy when you want to mix types without type conversion. A list is a list of R objects of **any** type. You create a list with the list function. For example,
+```{r}
+a_list <- list(1:3,"a",c(1.2,3.4,-5.6),c("hello","everybody"))
+```
+
+Let's see what happens if we print this list:
+```{r}
+print(a_list)
+```
+
+What if we request the type of a list?
+```{r}
+typeof(a_list)
+```
+
+Recall that we can individually access the elements in a vector using indexing. For example, 
+```{r}
+a_vect[1]
+```
+
+or
+
+```{r}
+a_vect[2]
+```
+
+We can **slice** vectors as well. For example:
+```{r}
+b_vect[1:3]
+```
+
+or even
+
+```{r}
+b_vect[c(2,4)]
+```
+
+
+How does indexing work with a list? Let's examine this.
+
+```{r}
+a_list[1]
+```
+
+**Question:** What did this do?
+
+It is actually considered better practice to do this instead:
+```{r}
+a_list[[1]]
+```
+
+Now we can also do things such as
+```{r}
+a_list[c(1,4)]
+```
+
+Notice that since the third element of a_list is a vector, we can use indexing on a_list[[3]] for :
+```{r}
+a_list[[3]][2]
+```
+
+The entries of lists (and vectors as well) can be given reference names. For example,
+```{r}
+aa_list <- list(three=1:3,a="a",my_vect=c(1.2,3.4,-5.6),my_words=c("hello","everybody"))
+```
+
+Let's print this:
+```{r}
+print(aa_list)
+```
+
+Names are an attribute of a list. For example,
+```{r}
+attributes(aa_list)
+```
+
+A full discussion of attributes of R objects would take us far off topic. If you want to know more about this, see [Advanced R](http://adv-r.had.co.nz/) by Hadley Wickham. 
+
+The use of naming is that now we can refer to elements of a list by name:
+```{r}
+aa_list$my_vect
+```
+
+Then indexing still works as
+```{r}
+aa_list$my_vect[2]
+```
+
+
+If you have a named vector such as
+```{r}
+named_vect <- c(a=2.1,b=7.6,c=-5.6)
+```
+
+you can also access the vectors elements via names as
+```{r}
+named_vect["c"]
+```
+
+Now we know enough to begin to look at data frames which is what we are most interested in anyway. 
+
+# Data Frames
+
+
