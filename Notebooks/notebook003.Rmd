@@ -1,12 +1,15 @@
 ---
-title: "Working with Data Frames"
+title: "Working with Data Frames Part I"
 output: html_notebook
 ---
 
 # Introduction to Data Frames
 
-We have seen that "tabular" data such as is typically entered into an excel spreadsheet is represented in R as a data frame. In fact, a data frame is the most common way of storing data in R. Here we will look further into the data frame structure. 
+We have seen that "tabular" data such as is typically entered into an excel spreadsheet and then saved as a csv or other common file format is represented as a **data frame** when imported into R. In fact, a data frame is the most common way of storing data in R. Here we will look further into the data frame structure. 
 
+**Python side note** The pandas libraryvenables one to work with data frames in Python in a manner very similar to what is done in R.
+
+**Warning** The material presented in this notebook is very important even if somewhat dry. 
 
 In R a **data frame** is a **list** of **vectors** that all have the same length. Remember this forever! The point here is that in order to fully understand data frames, we have to know something about vectors and lists. 
 
@@ -213,4 +216,86 @@ also useful
 str(bb_df)
 ```
 
+**Note:** There is an important subtlety in the construction of data frames that we need to highlight. By default, the data.frame() function converts strings to factors. That is why we see the term "Factor" in the output to sttr() above. We will see in a moment why this is an important point. For now, let's spell out in more detail what it means to converts strings to factors. 
 
+Consider the following:
+```{r}
+col2<-c("Mary","Steven","Jon","Tasha","Shannon")
+typeof(col2)
+```
+Based on this we see that the col2 just created is a character vector. Now consider
+```{r}
+typeof(bb_df$col2)
+```
+Why do we get this result? Observe
+```{r}
+print(bb_df$col2)
+```
+and
+```{r}
+attributes(bb_df$col2)
+```
+
+On the other hand
+```{r}
+attributes(col2)
+```
+
+What this tells us is that the character vector col2 has NULL (think of this as R's way of representing nothing) attributes
+while bb_df$col2 has two attributes called levels  and class with class value factor. This tells us that bb_df\$col2 is a factor (we will say exactly what this means in a moment) **even though when we created bb_df we entered col2 as a character vector.**
+
+The reason this all matters is because when you import a data table, say from a csv or excel spreadsheet into R with a read.table type function, by default it will convert strings into factors. This means that columns in the data frame corresponding to categorical (or qualitative)  variables will be represented in R as factors. So what is a factor?
+
+## Side note on factors
+
+A factor is a vector that can contain only predefined values, and is used to store categorical data. Factors are built on top of integer vectors. The integer determines the number of times each lelvel value occurs. How you construct a factor typically depends on how you want to use your data. Here are two common ways to create a factor.
+
+```{r}
+a_factor <- factor(c("Jon","Mary","George","Alex","Carrie"))
+b_factor <- factor(c("A","B","C","A","A","B"),levels = c("A","B","C","D","F"))
+```
+
+Let's print these:
+```{r}
+print(a_factor)
+```
+
+
+```{r}
+print(b_factor)
+```
+
+**Important point** If you don't specify the levels in a factor R sets default values for the levels based on the data vector. Also, as illustrated with the b_factor example, level values do not need to appear in the observed data. Factors are most useful when you know in advance the complete list of possible values that a categorical variable can take.  
+
+A nice thing about factors is that they correspond perfectly to tables and barplots. For example, 
+```{r}
+table(b_factor)
+```
+
+```{r}
+barplot(table(b_factor))
+```
+
+One final note about factors before going back to data frames. As stated, when a csv file is imported, and categorical variables get represented as a factor by default. For example. 
+```{r}
+df_w_factors <- read.csv("https://raw.githubusercontent.com/fivethirtyeight/data/master/bechdel/movies.csv")
+```
+
+Let's call str() on this:
+```{r}
+str(df_w_factors)
+```
+
+It is possible to control this behavior by changing the value of an optional argument in read.csv from what is default. For example,
+```{r}
+df_wo_factors <- read.csv("https://raw.githubusercontent.com/fivethirtyeight/data/master/bechdel/movies.csv",stringsAsFactors = F)
+```
+
+Let's call str() again,
+```{r}
+str(df_wo_factors)
+```
+
+**Question** Do you notice the difference? 
+
+Sometimes it is useful to represent categorical variables as factors and sometimes it is not. We will see this by way of examples as we progress through the course. The most important idea to grasp is simply that you need to pay attention to notice whether strings get converted to factors or not and if in case they do and this is undesirable, what can you do about it. In part II of working with data frames we will see how to exploit the data frame structure in order to do useful things.   
