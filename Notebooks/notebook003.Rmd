@@ -156,8 +156,61 @@ you can also access the vectors elements via names as
 named_vect["c"]
 ```
 
+**Note:** Remember that we said that a list can contain as an element **any** R object. Specifically, lists can contain other lists as elements. For example,
+```{r}
+bb_list <- list(vec_a=c(5,9,2.2,37),list_a=list(one=c(3,2,1),two=c("J","M","G")))
+```
+
+Let's print the contents of bb_list
+```{r}
+print(bb_list)
+```
+The fact that lists can contain any R object as an element makes lists extremely powerful. One of the most common applications of lists (besides in the context of their relationship to data frames) is that many functions return the output as a list. 
+
+**Note:** It is possible to convert an R object to as list with the as.list() function. It is also possible to "unlist" a list object with the unlist() function.  
+
 Now we know enough to begin to look at data frames which is what we are most interested in anyway. 
 
 # Data Frames
+
+Data frames are created with data.frame(). For example
+```{r}
+aa_df <- data.frame(c(5,4,3,2,1),c("Mary","Steven","Jon","Tasha","Shannon"))
+```
+Take care to make sure that each vector element of the data frame has the same length. 
+
+Let's print our data frame:
+```{r}
+print(aa_df)
+```
+
+It's important (and as we will see later useful) to know what are the attributes of a data frame:
+```{r}
+attributes(aa_df)
+```
+
+The point to take away here is that data frames have a (column) names atttribute and an row.names attribute. **If these are not specified in the definition of the data frame then they get default values.**
+
+The lesson here is that when you construct a data frame (even if it is done by importing data from a file) you should specify at least the (column) names. So what we should have done is somehting like this:
+```{r}
+bb_df <- data.frame(col1=c(5,4,3,2,1),col2=c("Mary","Steven","Jon","Tasha","Shannon"))
+```
+
+Let's examine bb_df:
+```{r}
+print(bb_df)
+```
+
+and
+
+```{r}
+attributes(bb_df)
+```
+
+
+also useful
+```{r}
+str(bb_df)
+```
 
 
