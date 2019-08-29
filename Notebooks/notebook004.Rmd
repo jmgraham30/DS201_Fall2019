@@ -1,0 +1,100 @@
+---
+title: "Working with Data Frames Part II"
+output: html_notebook
+---
+
+# Introduction to Working with Data Frames
+
+Now we know what a data frame is, a **data frame** is a **list** of **vectors** that all have the same length and a data frame is the most common way of storing data in R. Specifically, "tabular" data such as is typically entered into an excel spreadsheet and then saved as a csv or other common file format is represented as a data frame. 
+
+So we are ready to start to actually work with data frames in ways that are useful for data analyses. One of the first things that you typically have to do in working with data frames as part of a data analysis is to extract subsets or pieces from a data frame. Since a data frame is tabular or rectangular that options are to subset by row, by column, or a mix of both. 
+
+**Note** There is another tabular or rectagular data structure in R. It is called a **matrix.** It is worth your time to search either the R documentation or online to read about the differences between a matrix and a data frame. We will most likely make use of matrices (plural for matrix) in the future. 
+
+# Subsetting Data Frames
+
+## Simple indexing
+
+Elements of data frames can be accessed via indexing where there are two indices, one for the row number and another for the column number. Let's use the gapminder dataset in examples. Begin by loading the gapminder data library.
+```{r}
+library(gapminder)
+```
+
+We can determine the number of rows and columns of a data frame with the dim() function, for example
+```{r}
+dim(gapminder)
+```
+
+Then if we want the entry in the gapminder dataset that is in the third row and second column we simply type
+```{r}
+gapminder[3,2]
+```
+
+**Question:** What is the structure of the output? 
+
+When subsetting a data frame with indexing the result, even if a single entry is another data frame!
+
+Using indexing, we can easily subset by multiple rows and columns. For example,
+```{r}
+gapminder[2:5,1:3]
+```
+
+or even do something like
+
+```{r}
+gapminder[c(2,7,18),c(1,3,6)]
+```
+
+If you want say an entire row of a data frame, you can so something like
+```{r}
+gapminder[3, ]
+```
+
+Since the columns of the gapminder data frame have names, that is
+```{r}
+names(gapminder)
+```
+
+we can use these names in subsetting:
+```{r}
+gapminder$continent[2]
+```
+However, the output is not a data frame anymore. 
+
+## Conditional subsetting 
+
+In a swirl lesson you should have learned about Boolean (True or False or NA) values and logical expressions (expressions that return a Boolean value). We can use this to subset data frames using conditional expressions.
+
+Here is an example. The average lifeExp value in the gapminder data set is 
+```{r}
+mean(gapminder$lifeExp)
+```
+
+Let's extract all the values from the data that have a lifeExp value greater than 60:
+```{r}
+gapminder[gapminder$lifeExp > 60, ]
+```
+
+**Exercise:** Use this technique to determine what percentage of the data satisfy the lifeExp greater than 60 condition. 
+
+Notice that more complicated conditional satements can be used as well. For example, 
+```{r}
+gapminder[gapminder$lifeExp > 60 & gapminder$year >= 2000, ]
+```
+
+# Data Frames as Function Arguments
+
+The topic we discuss now is a sort of preview of things to come. As we will see, many functions can take or even require data in the form of a data frame as an argument. Let's examine one example of this. Suppose we want to obtain a scatter plot of gdpPercap versus pop for the gapminder dataset values where lifeExp is greater than 60 and the year is geater or equal to 2000. A nice way to do this is as follows:
+```{r}
+plot(lifeExp ~ pop, data=gapminder[gapminder$lifeExp > 60 & gapminder$year >= 2000, ])
+```
+
+
+Notice two things about this, 
+
+1) one of the input arguments into the plot function is the data
+
+2) we used the so-called formula notation lifeExp ~ pop, the is reminiscient of $y=f(x)$
+
+
+
