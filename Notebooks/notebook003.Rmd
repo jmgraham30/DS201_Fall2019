@@ -7,7 +7,7 @@ output: html_notebook
 
 We have seen that "tabular" data such as is typically entered into an excel spreadsheet and then saved as a csv or other common file format is represented as a **data frame** when imported into R. In fact, a data frame is the most common way of storing data in R. Here we will look further into the data frame structure. 
 
-**Python side note** The pandas libraryvenables one to work with data frames in Python in a manner very similar to what is done in R.
+**Python side note** The pandas library enables one to work with data frames in Python in a manner very similar to what is done in R.
 
 **Warning** The material presented in this notebook is very important even if somewhat dry. 
 

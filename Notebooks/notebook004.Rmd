@@ -94,7 +94,7 @@ Notice two things about this,
 
 1) one of the input arguments into the plot function is the data
 
-2) we used the so-called formula notation lifeExp ~ pop, the is reminiscient of $y=f(x)$
+2) we used the so-called formula notation lifeExp ~ pop, this is reminiscient of $y=f(x)$
 
 
 
