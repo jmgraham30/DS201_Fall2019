@@ -216,7 +216,7 @@ also useful
 str(bb_df)
 ```
 
-**Note:** There is an important subtlety in the construction of data frames that we need to highlight. By default, the data.frame() function converts strings to factors. That is why we see the term "Factor" in the output to sttr() above. We will see in a moment why this is an important point. For now, let's spell out in more detail what it means to converts strings to factors. 
+**Note:** There is an important subtlety in the construction of data frames that we need to highlight. By default, the data.frame() function converts strings to factors. That is why we see the term "Factor" in the output to str() above. We will see in a moment why this is an important point. For now, let's spell out in more detail what it means to converts strings to factors. 
 
 Consider the following:
 ```{r}
