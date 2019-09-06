@@ -1,0 +1,21 @@
+---
+title: "Introduction to Wrangling and Visualization"
+output: html_notebook
+---
+
+
+# Introduction 
+
+Data rarely comes perfectly prepared for the visualizations and analyses that you want to use to answer the questions you are most interested in. Thus, it is often the case that you may need to "wrangle" the data into a format or structure more amenable to the data science tasks you ultimately want to carry out.  In fact, it is not uncommon for a data scientist to spend significantly more time on wrangling data than on the data analysis.  Even in cases when the data is "clean" it still may useful to manipulate the data in various ways.  
+
+Some common data wrangling tasks include:
+
+1) Dealing with missing values
+2) Arranging values in a column or columns in some way
+3) Adding additional columns
+4) Removing columns or rows
+5) Aggregating parts of the data by a class or classes
+6) Spreading data in a column across multiple rows
+7) Combining information that spread across multiple datasets
+
+Displaying data as graph, chart, or other visual object is an extremely powerful way to learn about the structure and basic properties of your data. Visual displays are also a highly effective way to communicate the results of your data analyses to other people.       
