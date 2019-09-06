@@ -9,7 +9,7 @@ Now we know what a data frame is, a **data frame** is a **list** of **vectors** 
 
 So we are ready to start to actually work with data frames in ways that are useful for data analyses. One of the first things that you typically have to do in working with data frames as part of a data analysis is to extract subsets or pieces from a data frame. Since a data frame is tabular or rectangular that options are to subset by row, by column, or a mix of both. 
 
-**Note** There is another tabular or rectagular data structure in R. It is called a **matrix.** It is worth your time to search either the R documentation or online to read about the differences between a matrix and a data frame. We will most likely make use of matrices (plural for matrix) in the future. 
+**Note:** There is another tabular or rectagular data structure in R. It is called a **matrix.** It is worth your time to search either the R documentation or online to read about the differences between a matrix and a data frame. We will most likely make use of matrices (plural for matrix) in the future. 
 
 # Subsetting Data Frames
 
