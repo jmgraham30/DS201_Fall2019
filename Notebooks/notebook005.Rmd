@@ -18,4 +18,90 @@ Some common data wrangling tasks include:
 6) Spreading data in a column across multiple rows
 7) Combining information that spread across multiple datasets
 
-Displaying data as graph, chart, or other visual object is an extremely powerful way to learn about the structure and basic properties of your data. Visual displays are also a highly effective way to communicate the results of your data analyses to other people.       
+Displaying data as graph, chart, or other visual object is an extremely powerful way to learn about the structure and basic properties of your data. Visual displays are also a highly effective way to communicate the results of your data analyses to other people. Visualization is also a major component of data exploration, the art of looking at your data, rapidly generating hypotheses, quickly testing them, then repeating again and again and again. The goal of data exploration is to generate many promising leads that you can later explore in more depth.   
+
+In this notebook, we will begin to examine some of the basic principle of data wrangling and data visualization using the [dplyr](https://dplyr.tidyverse.org/) and [ggplot2](https://ggplot2.tidyverse.org/) R packages which are both part of the tidyverse family of packages. 
+
+We will begin by loading these packages, make sure that they are installed on you computer or instance of R Studio. 
+
+```{r,warning=FALSE,message=FALSE}
+library(dplyr)
+library(ggplot2)
+```
+
+
+# Introduction to ggplot2
+
+Some data visualizations are better than others. The ggplot2 package encourages (enforces?) good visualization practices by implementing a "grammar of graphics" that, once mastered, allows one to quickly construct effective, clean, and high quality graphical presentations of data. Our goal here is to quickly develop a feel for ggplot2 and learn some useful techniques. Later we will consider deeper aspects of data visualization and more of the ggplot2 functionality as well as some extensions of ggplot2. 
+
+## The ggplot function
+
+The mot basic function in the ggplot2 package is the ggplot function. Let's take a look at it's documentation:
+```{r}
+?ggplot
+```
+
+It is important to understand that this function doesn't really create a plot so much as it creates a "canvas" to which "layers" can be added eventually producing a (possibly highly complex) data visualization. For example, one may add a **geom** of a specific type (e.g. point, line, bar, etc.) to produce a ceratin type of plot.  Pay attention to the three common ways that ggplot is invoked as described in the help page. Note that one wil often input a data frame as the first argument to ggplot().  We will see examples soon.   
+
+## What do you want to plot?
+
+The structure of your data should be an import factor in determining what type(s) of plot you produce. Two initial questions that need to be addressed are
+
+1) Are you interested in the distribution or other characteristics of a single variable?
+
+2) Are you interested in the relation (if any) between multiple variables? 
+
+If your answer to 1) is yes, then is the variable of interest quantitative, categorical, etc. and if it is quantitative, is it continuous or discrete? 
+
+A similar question is relevant if the answer to 2) is yes but now the situation may be a little more complicated becuase you could have a mixture of categorical and quantitative, etc. variables. 
+
+You may also need to transform your data in some manner (e.g. rescale) or take into account a spatial or other structure  in order to get the most effective visualization.
+
+Rather than consider all of the possibilities that may arise in regard to creating visualizations, we will proceed with a series of examples that can then be modifed or built upon in other ways in the future. 
+
+## Working with single variable plots
+
+### Histograms
+
+A [histogram](https://en.wikipedia.org/wiki/Histogram) is a graphical representation of the distribution of (continuous) numerical data. Let's use the gapminder dataset for an initial example. 
+```{r}
+library(gapminder)
+```
+
+```{r}
+head(gapminder)
+```
+
+**Question:** Which variable(s) from gapminder correspond to continuous numerical data? 
+
+Here is a histogram of the gdpPercap variable:
+```{r}
+ggplot(data=gapminder,mapping=aes(x=gdpPercap)) + geom_histogram()
+```
+
+There are two points to mention. 
+
+1) A histogram "bins" the data and you must make a choice for either the width of or number of bins. For example, here is the effect of changing the number of bins (the default number is 30):
+```{r}
+ggplot(data=gapminder,mapping=aes(x=gdpPercap)) + geom_histogram(bins=20)
+```
+
+
+
+2) There is more than one way to use ggplot functions to achieve the same result. For example, 
+
+```{r}
+ggplot(data=gapminder) + geom_histogram(mapping=aes(x=gdpPercap))
+```
+
+Each geom function in ggplot2 takes a **mapping** argument. This defines how variables in your dataset are mapped to visual properties. The mapping argument is always paired with **aes** that specifies how the variables in the data get associated with the **aesthetics** of the plot. 
+
+You can also add **facets** which allow you to split your plot into subplots that each display one subset of the data according to classes determined by an additional categorical variable. For example, 
+```{r}
+ggplot(data=gapminder) + geom_histogram(mapping=aes(x=gdpPercap)) + 
+  facet_wrap(~continent)
+```
+
+
+
+# Introduction to dplyr
