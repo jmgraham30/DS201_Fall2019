@@ -16,9 +16,9 @@ Some common data wrangling tasks include:
 4) Removing columns or rows
 5) Aggregating parts of the data by a class or classes
 6) Spreading data in a column across multiple rows
-7) Combining information that spread across multiple datasets
+7) Combining information that is spread across multiple datasets
 
-Displaying data as graph, chart, or other visual object is an extremely powerful way to learn about the structure and basic properties of your data. Visual displays are also a highly effective way to communicate the results of your data analyses to other people. Visualization is also a major component of data exploration, the art of looking at your data, rapidly generating hypotheses, quickly testing them, then repeating again and again and again. The goal of data exploration is to generate many promising leads that you can later explore in more depth.   
+Displaying data as a graph, chart, or other visual object is an extremely powerful way to learn about the structure and basic properties of your data. Visual displays are also a highly effective way to communicate the results of your data analyses to other people. Visualization is also a major component of data exploration, the art of looking at your data, rapidly generating hypotheses, quickly testing them, then repeating again and again and again. The goal of data exploration is to generate many promising leads that you can later explore in more depth.   
 
 In this notebook, we will begin to examine some of the basic principle of data wrangling and data visualization using the [dplyr](https://dplyr.tidyverse.org/) and [ggplot2](https://ggplot2.tidyverse.org/) R packages which are both part of the tidyverse family of packages. 
 
@@ -41,7 +41,7 @@ The mot basic function in the ggplot2 package is the ggplot function. Let's take
 ?ggplot
 ```
 
-It is important to understand that this function doesn't really create a plot so much as it creates a "canvas" to which "layers" can be added eventually producing a (possibly highly complex) data visualization. For example, one may add a **geom** of a specific type (e.g. point, line, bar, etc.) to produce a ceratin type of plot.  Pay attention to the three common ways that ggplot is invoked as described in the help page. Note that one wil often input a data frame as the first argument to ggplot().  We will see examples soon.   
+It is important to understand that this function doesn't really create a plot so much as it creates a "canvas" to which "layers" can be added eventually producing a (possibly highly complex) data visualization. For example, one may add a **geom** of a specific type (e.g. point, line, bar, etc.) to produce a ceratin type of plot.  Pay attention to the three common ways that ggplot is invoked as described in the help page. Note that one will often input a data frame as the first argument to ggplot().  We will see examples soon.   
 
 ## What do you want to plot?
 
@@ -57,7 +57,7 @@ A similar question is relevant if the answer to 2) is yes but now the situation 
 
 You may also need to transform your data in some manner (e.g. rescale) or take into account a spatial or other structure  in order to get the most effective visualization.
 
-Rather than consider all of the possibilities that may arise in regard to creating visualizations, we will proceed with a series of examples that can then be modifed or built upon in other ways in the future. 
+Rather than considering here all of the possibilities that may arise in regard to creating visualizations, we will proceed with a series of examples that can then be modifed or built upon in other ways in the future. 
 
 ## Working with single variable plots
 
@@ -78,6 +78,7 @@ Here is a histogram of the gdpPercap variable:
 ```{r}
 ggplot(data=gapminder,mapping=aes(x=gdpPercap)) + geom_histogram()
 ```
+Notice that axes are automatically given labels. 
 
 There are two points to mention. 
 
@@ -94,7 +95,10 @@ ggplot(data=gapminder,mapping=aes(x=gdpPercap)) + geom_histogram(bins=20)
 ggplot(data=gapminder) + geom_histogram(mapping=aes(x=gdpPercap))
 ```
 
-Each geom function in ggplot2 takes a **mapping** argument. This defines how variables in your dataset are mapped to visual properties. The mapping argument is always paired with **aes** that specifies how the variables in the data get associated with the **aesthetics** of the plot. 
+**Exercise** Use ggplot to create a histogram for the lifeExp variable in gapminder. Play around with the number of bins (or width of bins). 
+
+
+Each geom function in ggplot2 takes a **mapping** argument. This defines how variables in your dataset are mapped to visual properties, e.g. to the coordinate axes. The mapping argument is always paired with **aes** that specifies how the variables in the data get associated with the **aesthetics** of the plot. 
 
 You can also add **facets** which allow you to split your plot into subplots that each display one subset of the data according to classes determined by an additional categorical variable. For example, 
 ```{r}
@@ -102,6 +106,44 @@ ggplot(data=gapminder) + geom_histogram(mapping=aes(x=gdpPercap)) +
   facet_wrap(~continent)
 ```
 
+Here is another example of adding additional layers to a plot:
+```{r}
+ggplot(gapminder,aes(x=lifeExp)) + geom_histogram() + geom_rug()
+```
 
+### Boxplots
+
+A boxplot is another way to visualize a single numerical variable. For example
+```{r}
+ggplot(gapminder,aes(y=lifeExp)) + geom_boxplot()
+```
+
+**Question:** What does a boxplot display? 
+
+**Exercise:** Use "faceting" to display subsets of lifeExp using the continent variable to determine the subsets. 
+
+We can also use a categorical variable such as continent to plot boxplots across categories by assigning to the x-axis the category values. For example,
+```{r}
+ggplot(gapminder,aes(x=continent,y=lifeExp)) + geom_boxplot()
+```
+
+In some sense this displays a relationship between the (continuous numeric) variable lifeExp and the (categorical) variable continent. You can add additional aesthetics to bring out some features of the plot. 
+
+```{r}
+ggplot(gapminder,aes(x=continent,y=lifeExp)) + geom_boxplot(aes(color=continent))
+```
+Notice that a legend was added automatically.
+
+We can customize the color choices and the axis labels:
+```{r}
+library(RColorBrewer)
+ggplot(gapminder,aes(x=continent,y=lifeExp)) + 
+  geom_boxplot(aes(color=continent)) +
+  scale_color_brewer(palette="YlOrRd") + 
+  labs(x="Continent",y="Life Expectancy (in years)")
+```
+
+
+**Note:** Almost every aspect of a ggplot is fully customizable. We will see some of this as we move forward. 
 
 # Introduction to dplyr
