@@ -111,6 +111,39 @@ Here is another example of adding additional layers to a plot:
 ggplot(gapminder,aes(x=lifeExp)) + geom_histogram() + geom_rug()
 ```
 
+Occassionally we are more interested in displaying the density of values rather than their counts as is the default behavior in a histogram. In order to obtain this, we must specify that a density stat is to be used instead of a count. For example,
+```{r}
+ggplot(gapminder,aes(x=lifeExp)) + geom_histogram(aes(y=..density..))
+```
+
+In this case, it is possible to overlay a probability density estimation:
+```{r}
+ggplot(gapminder,aes(x=lifeExp)) + geom_histogram(aes(y=..density..)) + 
+  geom_density()
+```
+
+Let's take a second to understand this plot. We will simulate some data in order to do this. The following code samples 1500 values from a normal (Gaussian) distribution with mean 0 and standard deviation 1
+```{r}
+samp_data <- data.frame(x=rnorm(1500,0,1))
+```
+
+Let's plot it's (density) histogram:
+```{r}
+ggplot(samp_data,aes(x=x)) + geom_histogram(aes(y=..density..),binwidth=0.25)
+```
+
+Let's overlay a plot of the normal density function on the histogram:
+```{r}
+ggplot(samp_data,aes(x=x)) + geom_histogram(aes(y=..density..),binwidth=0.25) + stat_function(fun=dnorm,args=list(mean=0,sd=1))
+```
+
+Next, let's compare the density estimation with the plot of the (known) density function:
+```{r}
+ggplot(samp_data,aes(x=x)) + geom_histogram(aes(y=..density..),binwidth=0.25) +
+  geom_density() + 
+  stat_function(fun=dnorm,args=list(mean=0,sd=1))
+```
+
 ### Boxplots
 
 A boxplot is another way to visualize a single numerical variable. For example
@@ -145,5 +178,85 @@ ggplot(gapminder,aes(x=continent,y=lifeExp)) +
 
 
 **Note:** Almost every aspect of a ggplot is fully customizable. We will see some of this as we move forward. 
+
+### Bar plots
+
+A common method for visualizing the distribution of a single categorical variable is to use a boxplot. For example
+
+```{r}
+ggplot(gapminder,aes(x=continent)) + geom_bar()
+```
+
+
+**Exercise:** Explain the graph that results from the following command:
+```{r}
+ggplot(gapminder,aes(x=continent,fill=country)) + geom_bar() + 
+  theme(legend.position = "none")
+```
+
+ggplot makes it very easy to add a title, caption, etc. For example, 
+```{r}
+ggplot(gapminder,aes(x=continent,fill=country)) + geom_bar() + 
+  theme(legend.position = "none") + 
+  labs(x="Continent",y="Count",title="Gapminder continents",subtitle="Data from https://www.gapminder.org/",caption="Colors distinguish countries of each continent")
+```
+
+## Working with multiple variable plots
+
+The gapminder dataset has 6 columns:
+```{r}
+dim(gapminder)
+```
+
+This implies that the gapminder dataset has six variables. We can see that two of those variables are categorical (country and continent) and the other four are numeric although we may question rather year should really be interpreted as a numeric variable. The question we shoudl consider is, how can we visualize more than one of these variables simultaneously in order to explore how these variables interact? 
+
+### Scatter plots
+
+For two continuous numeric variables, a scatter plot is a common approach to displaying the **covariantion** of the variables. For example,
+```{r}
+ggplot(gapminder,aes(x=gdpPercap,y=lifeExp)) + geom_point()
+```
+
+Notice that many of the points lie nearly on top of one another. In such cases it may be helpful to vary the translucence as for example in the following
+```{r}
+ggplot(gapminder,aes(x=gdpPercap,y=lifeExp)) + geom_point(alpha=0.2)
+```
+
+We can again add aesthetics to display additional variables. For example,
+```{r}
+ggplot(gapminder,aes(x=gdpPercap,y=lifeExp,size=pop)) + geom_point(alpha=0.2)
+```
+
+or even 
+```{r}
+ggplot(gapminder,aes(x=gdpPercap,y=lifeExp,size=pop,color=continent)) + geom_point(alpha=0.2)
+```
+
+Of course faceting will work here as well:
+```{r}
+ggplot(gapminder,aes(x=gdpPercap,y=lifeExp,size=pop)) + geom_point(alpha=0.2) + 
+  facet_wrap(~continent)
+```
+
+In some cases, you might want to change the scale of the numeric values in some way that makes it easier to see what is happening. Consider for example the following:
+```{r}
+ggplot(gapminder,aes(x=log10(gdpPercap),y=lifeExp,size=pop)) + geom_point(alpha=0.2) + 
+  facet_wrap(~continent)
+```
+
+
+Later we will discuss several extensions of ggplot but as a short example, we show  one such extension that provides a quick way to get a pairwise look at the covariation in the contiuous numerical variables in gapminder:
+```{r}
+library(GGally)
+```
+
+```{r}
+ggpairs(gapminder[,4:6])
+```
+
+**Exercise:** Explain what this graph shows. 
+
+### Categorical covariation 
+
 
 # Introduction to dplyr
