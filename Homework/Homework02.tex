@@ -1,0 +1,79 @@
+\documentclass[12pt]{article}
+\textwidth=7in
+\textheight=9.5in
+\topmargin=-1in
+\headheight=0in
+\headsep=.5in
+\hoffset  -.85in
+
+\pagestyle{empty}
+
+\usepackage{amsmath,amssymb,amsfonts}
+\usepackage{url}
+\usepackage{graphicx}
+
+\renewcommand{\thefootnote}{\fnsymbol{footnote}}
+\begin{document}
+
+\begin{center}
+{\bf Introduction to Data Science \\ Homework 2: Due Wednesday September 18 at 2:00pm}
+\end{center}
+
+\setlength{\unitlength}{1in}
+
+\begin{picture}(6,.1)
+\put(0,0) {\line(1,0){6.5}}
+\end{picture}
+
+\renewcommand{\arraystretch}{2}
+
+\vskip.25in
+
+\noindent{\bf  {\Large Exercises:} }
+
+\vskip.25in
+  \begin{enumerate}
+    \item Visit \url{http://data.gov}, and identify five data sets that sound interesting to you. For each write a brief description
+    and propose three interesting things you might do with them.
+    \item Read the first few sections through \emph{Visualising distributions} of \emph{R for Data Science} \url{https://r4ds.had.co.nz/}.
+    \item True or False: The {\tt diamonds} data set in the {\tt ggplot2} package is a data frame. One way to answer this question is by typing the command {\tt str(diamonds)} in R\footnote{If you want to look at the {\tt diamonds} data set, make sure you have the {\tt ggplot2} package installed and loaded.}.
+    \item How many variables are there in the {\tt diamonds} data set?
+    \item Classify each of the variables in the {\tt diamonds} data set. That is, state if the variable is continuous, discrete, categorical, etc.
+    \item Describe the difference between a bar plot and a histogram. Under what circumstances would you use each?
+    \item Explain the result of the command
+    \begin{verbatim}
+      ggplot(data = mpg) + geom_bar(mapping = aes(x=class))
+    \end{verbatim}
+    Make sure to answer the question in the context of the data. 
+  \item Explain the result of the command
+    \begin{verbatim}
+      ggplot(data = mpg) + geom_histogram(mapping = aes(x=displ),binwidth=0.4)
+    \end{verbatim}
+     Make sure to answer the question in the context of the data. 
+ 
+ \item Explain the meaning of the results obtained after running the R command\footnote{Make sure you have the {\tt ggplot2} package installed and loaded.}
+     \begin{verbatim}
+         summary(mpg)
+     \end{verbatim}
+     What information does this tell you about the {\tt mpg} data set?
+     
+     \item Describe what each of the listed functions do, be detailed
+        \begin{itemize}
+          \item {\tt  list.files}
+          \item {\tt  dir.create}
+          \item {\tt  file.create}
+          \item {\tt  file.info}
+          \item {\tt  file.rename}
+          \item {\tt  file.copy}
+        \end{itemize} 
+    \item Read through section 4 of the article \emph{Excuse me, do you have a moment to talk
+about version control?}, then answer the following questions. 
+\begin{enumerate}
+  \item What is Git?
+  \item What is GitHub? 
+  \item Why should someone in data science care about these? 
+\end{enumerate} 
+     
+  \end{enumerate}
+
+\end{document}
