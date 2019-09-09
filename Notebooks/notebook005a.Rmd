@@ -1,5 +1,5 @@
 ---
-title: "Introduction to Wrangling and Visualization"
+title: "Introduction to Wrangling and Visualization Part I"
 output: html_notebook
 ---
 
@@ -179,6 +179,19 @@ ggplot(gapminder,aes(x=continent,y=lifeExp)) +
 
 **Note:** Almost every aspect of a ggplot is fully customizable. We will see some of this as we move forward. 
 
+The following plot shows the summary statistics min, max, and median for the lifeExp variable computed by continent. 
+```{r}
+ggplot(data = gapminder) + 
+  stat_summary(
+    mapping = aes(x = continent, y = lifeExp),
+    fun.ymin = min,
+    fun.ymax = max,
+    fun.y = median
+  )
+```
+
+**Exercise:** Create a similar plot for the gdpPercap variable. 
+
 ### Bar plots
 
 A common method for visualizing the distribution of a single categorical variable is to use a boxplot. For example
@@ -200,6 +213,14 @@ ggplot(gapminder,aes(x=continent,fill=country)) + geom_bar() +
   theme(legend.position = "none") + 
   labs(x="Continent",y="Count",title="Gapminder continents",subtitle="Data from https://www.gapminder.org/",caption="Colors distinguish countries of each continent")
 ```
+
+
+It is also possible to display proportions with a bar plot. For example, 
+```{r}
+ggplot(data=gapminder) + geom_bar(mapping=aes(x=continent,y=..prop..,group=1))
+```
+
+**Exercise:** Explain the meaning of this plot. 
 
 ## Working with multiple variable plots
 
@@ -258,5 +279,41 @@ ggpairs(gapminder[,4:6])
 
 ### Categorical covariation 
 
+If you want to visualize how a continuous variable interacts with a categorical variable, one approach is to use a histogram together with faceting. For example, 
+```{r}
+ggplot(gapminder) + geom_histogram(aes(x=lifeExp)) + facet_wrap(~continent)
+```
 
-# Introduction to dplyr
+These can be overlayed, but the result will not be clear. 
+```{r}
+ggplot(gapminder) + geom_histogram(aes(x=lifeExp,fill=continent))
+```
+
+A better result is obtained as follows:
+```{r}
+ggplot(gapminder) + geom_freqpoly(aes(x=lifeExp,color=continent))
+```
+
+What if you want to visualize how two categorical variables interact? 
+
+One approach is to create a lattice of counts. For example, 
+```{r}
+ggplot(data = diamonds) +
+  geom_count(mapping = aes(x = cut, y = color))
+```
+
+This example uses the diamonds dataset contained in the ggplot2 package. 
+
+Another approach is to use tiles. For example, 
+```{r}
+diamonds %>% 
+  count(color, cut) %>%  
+  ggplot(mapping = aes(x = color, y = cut)) +
+    geom_tile(mapping = aes(fill = n))
+```
+
+In this example, we have used "piping" and the count() function. These are part of the dplyr package which is the primary tidyverse package for data wrangling. This is the subject we take up next. 
+```{r}
+?count
+```
+
