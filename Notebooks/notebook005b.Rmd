@@ -6,3 +6,304 @@ output: html_notebook
 
 # Introduction to dplyr
 
+Our goal is to get data into R in a format that is most useful for completing the data science tasks we ultimately want to carry out in order to answer the questions we are most concerned with. In many cases we may not even know what questions we can answer with our data until we have explored the characteristics of the data and data wrangling might even be a significant component of data exploration. 
+
+Some common data wrangling tasks include:
+
+1) Dealing with missing values
+2) Arranging values in a column or columns in some way
+3) Adding additional columns
+4) Removing columns or rows
+5) Aggregating parts of the data by a class or classes
+6) Spreading data in a column across multiple rows
+7) Combining information that is spread across multiple datasets
+
+The dplyr package in the tidyverse family of packages (which includes ggplot2 that we have already worked with) contains functions that facilitate data wrangling. The most important functions to know about are:
+
+* filter() - subsets data by rows
+
+* select() - subsets data by columns
+
+* arrange() - sorts the data by row
+
+* mutate() - add or modifies columns in data
+
+* summarise() - aggregates data across rows
+
+In the next section, we will look at each of these functions in turn.
+
+# A Running Example
+
+In May 2015, [fivethirtyeight](https://fivethirtyeight.com/) published an article [Joining The Avengers Is As Deadly As Jumping Off A Four-Story Building](https://fivethirtyeight.com/features/avengers-death-comics-age-of-ultron/) that seeks to examine the mortality rate of Marvel comic characters. They have made their dataset publicly available and we will use it to illustrate some data wrangling techniques. 
+
+Let's load our most important libraries and then read in the data which can be found [here](https://github.com/fivethirtyeight/data/tree/master/avengers).
+
+```{r,warning=FALSE,message=FALSE}
+library(dplyr)
+library(ggplot2)
+```
+
+
+```{r}
+avengers_df <- read.csv("https://raw.githubusercontent.com/fivethirtyeight/data/master/avengers/avengers.csv")
+```
+
+Just to see what is going on in the data, let's determine the size of the data andexamine first few and last few rows:
+```{r}
+dim(avengers_df)
+```
+
+```{r}
+head(avengers_df)
+```
+
+
+```{r}
+tail(avengers_df)
+```
+
+It may also be useful to get a quick idea about the summary stats of the variables in the data:
+```{r}
+summary(avengers_df)
+```
+
+
+**Question:** What do you observe about the data so far?
+
+Let's go back and look at the description of the data [here](https://github.com/fivethirtyeight/data/tree/master/avengers). Notice that there are blanks which we see correspnd to not applicable. It may be a good idea to replace these blanks with NA. This is easy to do at the time of reading in the data. We will also elect to not represent character vectors as factors. 
+
+```{r}
+data_url <- "https://raw.githubusercontent.com/fivethirtyeight/data/master/avengers/avengers.csv"
+avengers_df <- read.csv(data_url,na.strings = "")
+```
+
+Now look at the first few rowsn adn summary stats again:
+```{r}
+head(avengers_df)
+```
+
+
+```{r}
+summary(avengers_df)
+```
+
+## Selecting columns from a data frame
+
+The select function from dplyr allows us to subset data by columns. For example, suppose we only want to work with the name/alias and appearances variables. We can select for these columns with
+```{r}
+select(avengers_df,"Name.Alias","Appearances")
+```
+
+One aspect that is nice about dplyr and it's functions is that the **pipe** notation can be used. For example, 
+```{r}
+avengers_df %>% select("Name.Alias","Appearances") %>% 
+  ggplot() + 
+  geom_histogram(aes(x=Appearances))
+```
+
+The pipe basically represents the composition of functions. 
+
+You can use a minus sign in select to delete a column. For example,
+```{r}
+avengers_df %>% select(-"URL",-"Notes") %>% head()
+```
+
+Notice that select **does not** modify the original data. If you want to use select to create a new dataset you have to use assignment. For example,
+
+```{r}
+character_time_df <- avengers_df %>% select(c(Name.Alias,Appearances,Years.since.joining))
+```
+Creates a new data frame that we can use for example in plots, e.g.
+```{r}
+character_time_df %>% ggplot() + geom_histogram(aes(x=Years.since.joining))
+```
+
+## Filtering out rows of a data frame
+
+The filter function from dplyr allows us to subset data by rows. Say for example that we only want to see the death characteristics of female characters:
+```{r}
+avengers_df %>% filter(Gender=="FEMALE") %>% head()
+```
+
+Of course filter and select can be used in conjunction. For example, 
+```{r}
+avengers_df %>% filter(Gender=="FEMALE") %>% select(-c("URL","Notes")) %>% head()
+```
+
+You can filter according to any conditional. For example, let's look at characters that have more than 1000 appearances.
+```{r}
+avengers_df %>% filter(Appearances > 1000) %>% select(-c("URL","Notes")) %>% head()
+```
+
+**Exercise** Determine how many characters have more than 1000 appearances. 
+
+**Exercise** Determine how many characters have died at least once. 
+
+**Exercise** Determine how many characters returned after their first death. Is it common or not for characters to return after their first death? 
+
+**Exercise** Which character(s) have died the most? 
+
+## Arranging rows in a data frame
+
+The dplyr function arrange sorts the data by row. 
+
+```{r}
+?arrange
+```
+
+**Exercise** Read the documentation on arrange. Use what you learn to apply arrange in order to sort the Marvel  characters by their number of appearances. 
+
+The default in arrange is to sort in ascending order. If you want to descending this must be specified. For example, 
+```{r}
+avengers_df %>% arrange(desc(Years.since.joining))
+```
+
+**Exercise** Which Marvel characters have had the most appearances? 
+
+What happens if we input more than one variable into arrange? 
+```{r}
+avengers_df %>% arrange(Year,desc(Appearances)) %>% select(Name.Alias,Year,Appearances)
+```
+**Question:** How do you describe the result of the previous output? 
+
+We will see later that you can also arrange variables after aggregating by a category. 
+
+
+## Adding a column 
+
+The dplyr mutate function allows us to add or modify columns in data. This is very useful if you want to use existing columns in the construction of a new column. For example, lets add a column that contains a 1 in rows where a character has died at least once and a 0 otherwise.    
+
+```{r}
+avengers_df %>% select(-c("URL","Notes")) %>% mutate(Death1Count = ifelse(Death1 == "YES",1,0)) %>% head()
+```
+
+Let's do the same thing for each possible death, then add one last columns that adds up all the 1's and assign this to a new data frame:
+```{r}
+result_df <- avengers_df %>% select(-c("URL","Notes")) %>% mutate(Death1Count = ifelse(Death1 == "YES",1,0)) %>% 
+  mutate(Death2Count = ifelse(Death2 == "NO" | is.na(Death2),0,1)) %>%
+  mutate(Death3Count = ifelse(Death3 == "NO" | is.na(Death3),0,1)) %>%
+  mutate(Death4Count = ifelse(Death4 == "NO" | is.na(Death4),0,1)) %>%
+  mutate(Death5Count = ifelse(Death5 == "NO" | is.na(Death5),0,1)) %>% 
+  mutate(Character_deaths=Death1Count+Death2Count+Death3Count+Death4Count+Death5Count)
+```
+
+Let's examine the result
+```{r}
+head(result_df)
+```
+
+We can use this now to make a bar plots of the number of deaths. 
+```{r}
+result_df %>% ggplot() + geom_bar(aes(x=Character_deaths))
+```
+
+**Question** Do characters tend to die more than once? 
+
+## Collapsing a data frame by summaries
+
+The dplyr function summarise will collapse an entire data frame by applying some function to a column(s), typically this is done after aggregating the data across rows using the group_by function. 
+
+It is very helpful to read the summarise documentation: 
+```{r}
+?summarise
+```
+
+
+Here is an initial but very limited example, 
+```{r}
+avengers_df %>% summarise(median(Appearances))
+```
+
+You can apply multiple summary functions. For example, 
+```{r}
+avengers_df %>% summarise(median(Appearances),mean(Appearances),sd(Appearances))
+```
+
+It is better practice to assign names:
+
+```{r}
+avengers_df %>% summarise(median_Appearances=median(Appearances),mean_Appearances=mean(Appearances),sd_Appearances=sd(Appearances))
+```
+
+Let's look at the summary stats for Appearances after aggregating by first death:
+```{r}
+avengers_df %>% group_by(Death1) %>% summarise(median_Appearances=median(Appearances),mean_Appearances=mean(Appearances),sd_Appearances=sd(Appearances))
+```
+
+Let's plot this result for the median:
+```{r}
+avengers_df %>% group_by(Death1) %>% summarise(median_Appearances=median(Appearances)) %>%
+  ggplot() + geom_bar(aes(x=Death1,y=median_Appearances),stat="identity")
+```
+
+**Question** Notice that we set the stat to identity, what do you think this does? 
+
+**Question** Does it seem strange that of characters dying at least once there is a tendency toward more appearances that those that did not die at least once?
+
+**Exercise** Repeat the grouping and summarising but for max and min number of appearances instead of median, etc. 
+
+## A final example
+
+Let's go back to the familiar gapminder dataset. 
+```{r}
+library(gapminder)
+```
+
+Recall the data:
+```{r}
+head(gapminder)
+```
+
+What we would like to do examine how life expectancy varies both over time and across the globe. It probably does not make sense to compute only the mean life expectancy (why?). So we will aggregate and then compute the summary. 
+```{r}
+gapminder %>% group_by(year,continent) %>% summarise(mean_lifeExp=mean(lifeExp))
+```
+
+Now we can easily plot this:
+
+```{r}
+gapminder %>% group_by(year,continent) %>% summarise(mean_lifeExp=mean(lifeExp)) %>%
+  ggplot() + geom_bar(aes(x=continent,y=mean_lifeExp),stat="identity") + 
+  facet_wrap(~year)
+```
+
+Notice that the labels on the x-axis are hard to read. There are two easy fixes for this. One is the flip the coordinate axes:
+```{r}
+gapminder %>% group_by(year,continent) %>% summarise(mean_lifeExp=mean(lifeExp)) %>%
+  ggplot() + geom_bar(aes(x=continent,y=mean_lifeExp),stat="identity") + 
+  facet_wrap(~year) + coord_flip()
+```
+
+The other is to rotate the labels:
+
+
+```{r}
+gapminder %>% group_by(year,continent) %>% summarise(mean_lifeExp=mean(lifeExp)) %>%
+  ggplot() + geom_bar(aes(x=continent,y=mean_lifeExp),stat="identity") + 
+  facet_wrap(~year) + theme(axis.text.x = element_text(angle = 45))
+```
+
+**Exercise** What information might be determined from this plot? 
+
+Another way to look at this same information is for example with
+```{r}
+gapminder %>% group_by(year,continent) %>% summarise(mean_lifeExp=mean(lifeExp)) %>%
+  ggplot() + geom_point(aes(x=year,y=mean_lifeExp,color=continent)) + 
+  theme(axis.text.x = element_text(angle = 45))
+```
+
+**Exercise** What information might be determined from this plot? Comparing this plot with the previous, which is more effetive? 
+
+For our next topic, [exploratory data analysis](https://en.wikipedia.org/wiki/Exploratory_data_analysis) (EDA) we will see how wrangling and visualization can be put together in order to determine some relevant data-driven questions and to take steps toward beginning the modeling process. 
+
+
+
+
+
+
+
+
+
+
+
+
