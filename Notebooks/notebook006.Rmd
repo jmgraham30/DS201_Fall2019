@@ -138,9 +138,64 @@ Next, let's look at the Total variable which is numeric so a histogram might be 
 grads_df %>% ggplot() + geom_histogram(aes(x=Total))
 ```
 
-**Question:** What do we learn form this plot? What questions does this plot inspire?
+**Question:** What do we learn from this plot? What questions does this plot inspire?
+
+One idea that is often useful (maybe even necessary) is to rescale (or transform) the variable. For example, rather than plotting the exact values for the Total variable, maybe it makes sense to plot the $\log_{10}$ of the Total values. This is easily achieved as
+```{r}
+grads_df %>% ggplot() + geom_histogram(aes(x=log10(Total)))
+```
+ 
+**Question:** WHy do we observe the difference that we do when comparing the last two plots? 
+
+A boxplot may also be helpful here:
+```{r}
+grads_df %>% ggplot() + geom_boxplot(aes(y=Total))
+```
+
+There appears to be a good number of outliers in the Total variable. What is the source of or explanation for these outliers? 
+
+Observe the result of the following calculation:
+```{r}
+log10(median(grads_df$Total,na.rm = T))
+```
+
+A more complete picture of Total may be obtained showing the breakdown of Total by Men and Women, and major category:
+```{r}
+grads_df %>% gather(Men,Women,key="Gender",value="Number") %>% ggplot() + geom_freqpoly(aes(x=log10(Number),color=Gender)) + 
+  facet_wrap(~Major_category)
+```
 
 
+**Question:** What does this graph demonstrate about the data? 
+
+**Exercise:**  Explore the ShareWomen variable. What do you observe? 
+
+
+We should examine the distributions for all of the variables in the data. In consideration of time let's just look at one more, the unemployment rate. 
+
+Here is a histogram and boxplot for unemployment:
+```{r}
+grads_df %>% ggplot() + geom_histogram(aes(x=Unemployment_rate))
+```
+
+```{r}
+grads_df %>% ggplot() + geom_boxplot(aes(y=Unemployment_rate))
+```
+
+**Question:** What can you determine from the last two plots? 
+
+
+Let's look at the distributions of unemployment rate across major categories:
+```{r}
+grads_df %>% ggplot() + geom_freqpoly(aes(x=Unemployment_rate,color=Major_category))
+```
+
+```{r}
+grads_df %>% ggplot() + geom_boxplot(aes(x=Major_category,y=Unemployment_rate)) + 
+  coord_flip()
+```
+
+**Question:** What information can be gleaned from the last two plots? Is there any other additional aspects that can be considered with regard to unemployment? 
 
 
 
