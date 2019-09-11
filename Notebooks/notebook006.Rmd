@@ -1,0 +1,146 @@
+---
+title: "Intro to Exploratory Data Analysis in R"
+output: html_notebook
+---
+
+# Introduction 
+
+Exploratory data analysis (EDA) has been described as "the art of looking at data in a careful and structured way" and seeks to  "use visualisation and transformation to explore your data in a systematic way." These techniques are typically applied before formal modeling commences and can help inform the development of more complex statistical models.
+
+As stated in [R for Data Science](https://r4ds.had.co.nz/exploratory-data-analysis.html) 
+
+> EDA is not a formal process with a strict set of rules. More than anything, EDA is a state of mind. During the initial phases of EDA you should feel free to investigate every idea that occurs to you. Some of these ideas will pan out, and some will be dead ends. As your exploration continues, you will home in on a few particularly productive areas that you’ll eventually write up and communicate to others.
+
+Many books on data science include a chapter(s) on EDA and there are even a few books entirely dedicated to EDA ([Exploratory Data Analysis with R](https://bookdown.org/rdpeng/exdata/) is freely available online). The point is that EDA is an extremely important part of any dat aanalyses. 
+
+
+In order to get things starter, we describe, following the book Exploratory Data Analysis Using R, a  general strategy for conducting an EDA:
+
+1) Assess the general characteristics of the dataset, *e.g.*:
+
+    a) How many observations do we have? How many variables?
+    b) What are the variable names? Are they meaningful?
+    c) What type is each variable—e.g., numeric, categorical, logical?
+    d) How many unique values does each variable have?
+    e) What value occurs most frequently, and how often does it occur?
+    f) Are there missing observations? If so, how frequently does this occur?
+  
+2) Examine descriptive statistics for each variable;
+
+3) Where possible—certainly for any variable of particular interest—examine exploratory visualizations;
+
+4) Look for data anomalies;
+
+5) Look at the relations between key variables;
+
+6) Finally, summarize results of EDA to serve as a basis for subsequent analysis and explanation of the results.
+
+# Initial Steps
+
+To begin an EDA in R, you need to load your data into R. It is also recommended that you load any libraries or packages that you will use. When conducting an EDA it is highly advisable to work in a notebook environment in order to optimize reproducibility and to help in communicating your results to others. 
+
+## Load essential packages
+
+As we have mentioned before, the tidyvrese family of packages contain functions that facilitate EDA. Thus, we will begin the process by loading the tidyverse package.  
+```{r,warning=FALSE,message=FALSE}
+library(tidyverse)
+```
+
+## Import data
+
+Here we will work with a running example. 
+
+Load the data from [here](https://fivethirtyeight.com/features/the-economic-guide-to-picking-a-college-major/):
+```{r,message=FALSE}
+grads_df <- read.csv("https://raw.githubusercontent.com/fivethirtyeight/data/master/college-majors/recent-grads.csv")
+```
+
+
+## Determine basic data characteristics
+
+Let's look at the size of our data:
+```{r}
+dim(grads_df)
+```
+Thus there are 173 rows (observations) and 21 columns (variables). 
+
+Let's examine the head and tail of our data:
+```{r}
+head(grads_df)
+```
+
+
+```{r}
+tail(grads_df)
+```
+
+**Exercise:** Look at the source of the data, [here](https://fivethirtyeight.com/features/the-economic-guide-to-picking-a-college-major/), specifically the recent-grads csv file. Did the data load properly?
+
+**Exercise** What does each column in the data frame represent? Are the column names meaningful? 
+
+Recall that you can list all column names with
+```{r}
+names(grads_df)
+```
+
+**Question:** What is the meaning of college jobs, noncollege jobs, and low wage jobs? 
+
+
+**Question:** How many variables are numeric? How many variables are categorical? Are there any other structural features to the variables? 
+
+We can easily determine the number of uniqie elements of a particular variable with
+```{r}
+length(unique(grads_df$Major_category))
+```
+ 
+We can simultaneously apply this to each column of the data with
+```{r}
+apply(grads_df,2,function(x) length(unique(x)))
+```
+
+**Question** What can you determine from this result? 
+
+Let's call the summary function:
+```{r}
+summary(grads_df)
+```
+  
+Notice that there are some missing values. It's important to asses whether the missing values are contained all in a single row or if they might be spread out across the data. Here is one way to do this:
+```{r}
+sum(complete.cases(grads_df))
+```
+Therefore we see that all of the missing values are in a single row. 
+
+**Question** Why do we draw this conclusion and how does it work? 
+
+We can determine which row contains the missing values with
+```{r}
+grads_df[!complete.cases(grads_df) , ]
+```
+
+It is row 22. 
+
+**Question:** What types of questions might we be able to use this data to ask and/or answer? 
+
+## Variable distributions
+
+Let's look at the distribution of our variables. This is pointless to do for Rank, Major_code, and Major, why? 
+
+Major_category is a categorical variable (factor) that we can visualize with a bar plot:
+```{r}
+grads_df %>% ggplot() + geom_bar(aes(x=Major_category)) + coord_flip()
+```
+
+**Question:** What do we learn form this plot? What questions does this plot inspire? 
+
+Next, let's look at the Total variable which is numeric so a histogram might be appropriate:
+```{r}
+grads_df %>% ggplot() + geom_histogram(aes(x=Total))
+```
+
+**Question:** What do we learn form this plot? What questions does this plot inspire?
+
+
+
+
+
