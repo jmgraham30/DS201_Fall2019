@@ -35,6 +35,8 @@ In order to get things starter, we describe, following the book Exploratory Data
 
 6) Finally, summarize results of EDA to serve as a basis for subsequent analysis and explanation of the results.
 
+**Important** Reproducibility is very important in EDA. If someone can not follow your steps or if  you can not retrace your steps then EDA has lost much of its power and usefulness. 
+
 # Initial Steps
 
 To begin an EDA in R, you need to load your data into R. It is also recommended that you load any libraries or packages that you will use. When conducting an EDA it is highly advisable to work in a notebook environment in order to optimize reproducibility and to help in communicating your results to others. 
@@ -48,7 +50,19 @@ library(tidyverse)
 
 ## Import data
 
-Here we will work with a running example. 
+Here we will work with a running example. Here we will explore data related to a fivethirtyeight article on the [the economics of college majors](https://fivethirtyeight.com/features/the-economic-guide-to-picking-a-college-major/). 
+
+**Homework** Read this article. In the near future we will have an in-class exercise related to this article. As you read the article, consider the following points:
+
+1) Can all of the claims made in the article be derived from the provided data sets?
+
+2) Can all of the claims made in the article be justified with the provided data sets?
+
+3) Is it clear or not what exactly is in the data? 
+
+4) Does the article make appropriate use of the data? 
+
+5) Can you discover anything from the dat abeyond what is presented in the article? 
 
 Load the data from [here](https://fivethirtyeight.com/features/the-economic-guide-to-picking-a-college-major/):
 ```{r,message=FALSE}
@@ -104,6 +118,8 @@ Let's call the summary function:
 ```{r}
 summary(grads_df)
 ```
+
+The data seems to already be in pretty good shape. We probably don't need to spend any time initially cleaning the data although later we might want to do some data wrangling to explore patterns that are not obvious from the start. 
   
 Notice that there are some missing values. It's important to asses whether the missing values are contained all in a single row or if they might be spread out across the data. Here is one way to do this:
 ```{r}
@@ -118,7 +134,7 @@ We can determine which row contains the missing values with
 grads_df[!complete.cases(grads_df) , ]
 ```
 
-It is row 22. 
+It is row 22. One question we might need to ask is why is the data missing for this observation. It may not be important here but in many applications a determination of why data is missing is relevant.  
 
 **Question:** What types of questions might we be able to use this data to ask and/or answer? 
 
@@ -126,7 +142,7 @@ It is row 22.
 
 Let's look at the distribution of our variables. This is pointless to do for Rank, Major_code, and Major, why? 
 
-Major_category is a categorical variable (factor) that we can visualize with a bar plot:
+Major_category is a categorical variable (factor) that we can visualize easily with a bar plot:
 ```{r}
 grads_df %>% ggplot() + geom_bar(aes(x=Major_category)) + coord_flip()
 ```
@@ -145,7 +161,7 @@ One idea that is often useful (maybe even necessary) is to rescale (or transform
 grads_df %>% ggplot() + geom_histogram(aes(x=log10(Total)))
 ```
  
-**Question:** WHy do we observe the difference that we do when comparing the last two plots? 
+**Question:** Why do we observe the difference that we do when comparing the last two plots? 
 
 A boxplot may also be helpful here:
 ```{r}
@@ -168,8 +184,65 @@ grads_df %>% gather(Men,Women,key="Gender",value="Number") %>% ggplot() + geom_f
 
 **Question:** What does this graph demonstrate about the data? 
 
-**Exercise:**  Explore the ShareWomen variable. What do you observe? 
 
+Suppose that we want to know how many majors produce graduates with more than fifty percent being women. We can add on a binary variable with 1 if Sharewomen is more than 0.5 an 0 otherwise:
+```{r}
+grads_df <- grads_df %>% mutate(greaterHalfWomen=ifelse(ShareWomen > 0.5,1,0))
+```
+
+Let's check the result:
+
+```{r}
+head(grads_df)
+```
+
+Let's use this to count the numbers of majors with more than fifty percent women:
+```{r}
+sum(grads_df$greaterHalfWomen,na.rm = T)
+```
+
+Let's do this is aggregate by major cateogry and include the number of majors that are in each major category:
+```{r}
+grads_df %>% group_by(Major_category) %>% summarise(ghw=sum(greaterHalfWomen,na.rm = T),in_category=n())
+```
+
+**Question** What do you observe from this information? 
+
+Now let's look at the Median variable which reports the median earnings of graduates from each of the represented majors. 
+
+We start with a histogram and boxplot as usual:
+```{r}
+grads_df %>% ggplot() + geom_histogram(aes(x=Median))
+```
+
+
+```{r}
+grads_df %>% ggplot() + geom_boxplot(aes(y=Median))
+```
+
+**Question:** What do you observe from these last two plots?  
+
+It is probably a good idea look at median earning across the major categories. One way to do this is 
+```{r}
+grads_df %>% ggplot() + geom_boxplot(aes(x=Major_category,y=Median)) + coord_flip()
+```
+
+Just for purposes of comparison, let's add an line that indicates the average of the median earnings across majors:
+```{r}
+grads_df %>% ggplot() + geom_boxplot(aes(x=Major_category,y=Median)) + 
+  geom_hline(yintercept=mean(grads_df$Median),color="blue") +
+  coord_flip()
+```
+
+Let's also compute the median and mean of the median earnings aggregated by major category:
+```{r}
+grads_df %>% group_by(Major_category) %>% summarise(mean_me=mean(Median),median_me=median(Median))
+```
+
+**Question:** What is your take away from the aggegate summary and previous plot? 
+
+
+**Exercise:**  Explore the ShareWomen variable. What do you observe? 
 
 We should examine the distributions for all of the variables in the data. In consideration of time let's just look at one more, the unemployment rate. 
 
@@ -196,6 +269,110 @@ grads_df %>% ggplot() + geom_boxplot(aes(x=Major_category,y=Unemployment_rate)) 
 ```
 
 **Question:** What information can be gleaned from the last two plots? Is there any other additional aspects that can be considered with regard to unemployment? 
+
+Note that one topic that we can not easily consider directly using this data is the relationship between gender and employment and income since the employment and salary related data are not broken down by Women/Men. 
+
+## Relations between key variables
+
+**Question** What are the key variables that we should explore the relationships between?
+
+Let's begin by looking at Unemployed versus Total:
+```{r}
+grads_df %>% ggplot() + geom_point(aes(x=Total,y=Unemployed))
+```
+
+**Question:** What observations do you make based on this plot? 
+
+Let's add in the extra dimension of Major_category:
+```{r}
+grads_df %>% ggplot() + geom_point(aes(x=Total,y=Unemployed,color=Major_category))
+```
+
+**Question:** Do you think it makes sense for large values for Unemployed to correspond to large values for Total? 
+
+We may also want to consider the relation between the percent of women in a major and the unemployment rate. 
+
+```{r}
+grads_df %>% ggplot() + geom_point(aes(x=ShareWomen,y=Unemployment_rate))
+```
+
+**Question:** What do you observe from this plot? 
+
+Let's add the extra dimension of major category:
+```{r}
+grads_df %>% ggplot() + geom_point(aes(x=ShareWomen,y=Unemployment_rate,color=Major_category))
+```
+
+or perhaps even 
+
+```{r}
+grads_df %>% ggplot() + 
+  geom_point(aes(x=ShareWomen,y=Unemployment_rate,color=Major_category)) + 
+  facet_wrap(~Major_category)
+```
+
+There are a variety of ways that we can explore relationships between variables in a data set and you are encouraged to go beyond what we do in this notebook. Let's warp up our intro to EDA with one further task. If you look at the the site for the data resource [here](), you will see that there are actually five different data sets. Three of then are already incorporated into the data set  we have already been exploring. But there is one that contains information that is not in our current data set. Let's combine the two together by matching with a column that they both have in common. 
+
+First we read in the additional data set:
+```{r}
+students_df <- read.csv("https://raw.githubusercontent.com/fivethirtyeight/data/master/college-majors/grad-students.csv")
+```
+
+These two data sets have the Major_code (and Major) in common, let's confirm this:
+
+```{r}
+grads_df %>% arrange(Major_code) %>%  head()
+```
+
+```{r}
+students_df %>% arrange(Major_code) %>%  head()
+```
+
+```{r}
+grads_df %>% arrange(Major_code) %>%  tail()
+```
+
+
+```{r}
+students_df %>% arrange(Major_code) %>%  tail()
+```
+
+```{r}
+names(grads_df)
+```
+
+```{r}
+names(students_df)
+```
+
+Notice that these two have more than one column in commmon. Let's remove the redundancy and then merge:
+```{r}
+students_df <- students_df %>% select(-Major,-Major_category)
+```
+
+
+```{r}
+merged_df <- merge(grads_df,students_df,by="Major_code")
+```
+
+Now let's examine the result:
+```{r}
+names(merged_df)
+```
+
+```{r}
+head(merged_df)
+```
+
+Moving forward we will see some additional EDA techniques and results. 
+
+**Exercise:** Conduct additional explorations of the data from our running example that we have not done already. 
+
+
+
+
+
+
 
 
 
