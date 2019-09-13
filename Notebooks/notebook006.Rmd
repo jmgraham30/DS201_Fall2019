@@ -241,6 +241,19 @@ grads_df %>% group_by(Major_category) %>% summarise(mean_me=mean(Median),median_
 
 **Question:** What is your take away from the aggegate summary and previous plot? 
 
+Of course, only looking at the median can be misleading (why?) so let's examine the 25th and 75th percentiles (which are both inlcuded in the data) as well as the median. We will plot all three together as a function of the rank:
+```{r}
+grads_df %>% gather(Median,P25th,P75th,key="quantile",value="earning") %>% 
+  ggplot(aes(x=Rank,y=earning,color=quantile)) + geom_point()
+```
+
+**Question:** What is your take away from the last plot? 
+
+Complementing this with "smoothing lines" might help to bring out the pattern. 
+```{r}
+grads_df %>% gather(Median,P25th,P75th,key="quantile",value="earning") %>% 
+  ggplot(aes(x=Rank,y=earning,color=quantile)) + geom_point() + geom_smooth()
+```
 
 **Exercise:**  Explore the ShareWomen variable. What do you observe? 
 
