@@ -1,0 +1,90 @@
+\documentclass[12pt]{article}
+\textwidth=7in
+\textheight=9.5in
+\topmargin=-1in
+\headheight=0in
+\headsep=.5in
+\hoffset  -.85in
+
+\pagestyle{empty}
+
+\usepackage{amsmath,amssymb,amsfonts}
+\usepackage{url}
+
+\renewcommand{\thefootnote}{\fnsymbol{footnote}}
+\begin{document}
+
+\begin{center}
+{\bf Intro to Data Science \\ Homework 3: Due Wednesday September 25 at 2:00pm}
+\end{center}
+
+\setlength{\unitlength}{1in}
+
+\begin{picture}(6,.1)
+\put(0,0) {\line(1,0){6.5}}
+\end{picture}
+
+\renewcommand{\arraystretch}{2}
+
+\vskip.25in
+
+\noindent{\bf  {\Large Exercises:} }
+
+\vskip.25in
+  \begin{enumerate}
+    \item   Go through section 9 Functions of the R Programming course in the {\tt swirl} package, then answer the following questions:
+    \begin{enumerate}
+      \item   What is a function? 
+      \item What does the {\tt Sys.Data()} function do? How many input arguments are required?
+      \item What are the two ``slogans'' for R stated by John Chambers? 
+      \item How do you see the source code for an R function? 
+      \item Why would having default arguments by useful?
+      \item What does the {\tt args} function do? Give an example of its use. 
+      \item Explain why one might want to pass a function as an argument to another function. 
+      \item What is an easy way to return the last element of an arbitrary vector? 
+      \item What does the {\tt paste} function do? 
+      \item What is the significance of the ``dot-dot-dot'' argument for a function in R? 
+    \end{enumerate}
+    \item Write an R function that inputs a vector and computes the mean of the vector. Save your function in an R script called {\tt my\_mean\_func.R}. Be sure to test your function and make sure it is working correctly.
+    \item Write an R function that inputs two whole numbers and returns the remainder after dividing the first by the second. Save your function in an R script called {\tt my\_remain\_func.R}. Be sure to test your function and make sure it is working correctly.
+    \item This exercise walks you through the steps to plot the graph of a function $y=f(x)$ using the {\tt stat\_function()} function from the ggplot2 package. Here are the commands to plot $y=x^3$ over the interval $[-1,2]$:
+<<>>=
+library(ggplot2)
+# create function for y=x^3
+y_cubed <- function(x){
+  x^3
+}
+# create input values
+x <- seq(-1,2,by=0.05)
+f_df <- data.frame(x=x)
+# plot graph
+ggplot(f_df,aes(x=x)) + stat_function(fun="y_cubed")
+@
+    
+    \begin{enumerate}
+      \item Using the previous code as a template, plot the specified functions over the given interval:
+      \begin{enumerate}
+        \item $y=2x^2 - 3x + 5$, $[-2,6]$
+        \item $y=e^{-2x}$, $[0,3]$
+        \item $y=\ln(x)$, $[0.5,3]$
+      \end{enumerate}
+    \end{enumerate}
+    \item What trigonometric functions does R provide? Make plots of each of the trigonometric functions over an appropriate period. 
+    \item Using the {\tt flights} data from the {\tt nycflights13} package,  find all flights that
+    \begin{enumerate}
+      \item Had an arrival delay of two or more hours
+      \item Flew to Houston (IAH or HOU)
+      \item Were operated by United, American, or Delta
+      \item Departed in summer (July, August, and September)
+      \item Arrived more than two hours late, but didn?t leave late
+      \item Were delayed by at least an hour, but made up over 30 minutes in flight
+      \item Departed between midnight and 6am (inclusive)
+    \end{enumerate}
+    \item Another useful {\tt dplyr} filtering helper is {\tt between()}. What does it do? Can you use it to simplify the code needed to answer the previous challenges?
+    \item How many flights have a missing dep\_time? What other variables are missing? What might these rows represent?
+    \item How could you use arrange() to sort all missing values to the start? (Hint: use is.na()).
+    \item Sort {\tt flights} to find the most delayed flights. Find the flights that left earliest.
+    \item Sort {\tt flights} to find the fastest flights.
+    \end{enumerate}
+    
+\end{document}
