@@ -150,9 +150,65 @@ iris %>% ggplot(aes(x=Petal.Length,y=Petal.Width,color=Species)) + geom_point()
 
 **Question:** What is the biggest difference in this problem compared with the problem of using  predictor variables to predict income in the Wage data? 
 
-## Gene expression data and classifying cancers
+## Reexamining Iris
 
+For the sake of illustration consider a situation where a researcher measured the petal length and width of a number of flowers but either didn't know or failed to record the species. In this case, the only data we would have would be 
+```{r}
+petal_df <- iris %>% select(Petal.Length,Petal.Width)
+```
+for which the first few rows are
+```{r}
+head(petal_df)
+```
 
+Recall that a scatterplot of these two variables looks like this:
+```{r}
+petal_df %>% ggplot(aes(x=Petal.Length,y=Petal.Width)) +
+  geom_point()
+```
+Even without the Species variable to "label" the data it still seems clear that there clusters that we may suspect fundamentally distinguish some data values from others. 
 
+In cases where we want to model **unlabeled** data, that is a data set that lacks a unique response or outcome variable we must use a so-called unsupervised leanring method. 
 
+For example, suppose we want to try to detect clusters in the data. Here is an example the details of which we will spell out later. We will start by looking for two clusters. 
+```{r}
+km_result <- kmeans(petal_df,centers = 2)
+petal_df$two_clusters <- factor(km_result$cluster)
+head(petal_df)
+```
+Now we can plot out result:
+```{r}
+petal_df %>% ggplot(aes(x=Petal.Length,y=Petal.Width,shape=two_clusters)) + geom_point(size=2)
+```
+
+**Question:** What do you observe about this result? 
+
+Let's see what happens if we try to find three clusters:
+```{r}
+km_result <- kmeans(petal_df[ ,c(1,2)],centers = 3)
+petal_df$three_clusters <- factor(km_result$cluster)
+head(petal_df)
+```
+
+Let's plot the result:
+```{r}
+petal_df %>% ggplot(aes(x=Petal.Length,y=Petal.Width,shape=three_clusters)) + geom_point(size=2)
+```
+
+Observe what it looks like if we overlay the known species values as colors on top of the last figure:
+```{r}
+petal_df %>% ggplot(aes(x=Petal.Length,y=Petal.Width,shape=three_clusters,color=iris$Species)) + geom_point(size=2)
+```
+
+**Question:** What do you observe about this result? 
+
+Unsupervised methods such as clustering are extremely valuable in practice in applications where the answer is not know. The first two example problems we looked at are ideal problems for supervised learning. Specifically, they are problems of regression and classification respectively.
+
+There are three main aspects to data modeling:
+
+1) Model fitting or training
+2) Model validation 
+3) Model selection 
+
+We will cover these in detail in turn and also develop the necessary background statistical ideas. However, we first introduce the main "big picture" ideas, concepts, and terminology of data modeling. Again, for this please read Chapter 2 from [An Introduction to Statistical Learning](http://faculty.marshall.usc.edu/gareth-james/ISL/)
 
