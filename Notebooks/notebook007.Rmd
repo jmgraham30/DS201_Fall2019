@@ -5,6 +5,7 @@ output: html_notebook
 
 ```{r,message=FALSE,warning=FALSE}
 library(tidyverse)
+library(GGally)
 library(caret)
 library(broom)
 library(ISLR)
@@ -91,7 +92,63 @@ Wage %>% mutate(ed_level_number=str_extract(education,"\\d")) %>% select(educati
 
 ## Iris data and predicting flower species
 
+The [Iris data set](https://en.wikipedia.org/wiki/Iris_flower_data_set) is a famous multivariate data set introduced by the British statistician and biologist Ronald Fisher in his 1936 paper *The use of multiple measurements in taxonomic problems.* This data set is included in base R. 
 
+Let's determine the size of the data set and get a sense of what it contains:
+```{r}
+dim(iris)
+```
+
+```{r}
+head(iris)
+```
+
+```{r}
+?iris
+```
+
+**Exercise:** By reading the iris data help page and skimming the Wikipedia article  [Iris data set](https://en.wikipedia.org/wiki/Iris_flower_data_set) state what is contained in this data set. 
+
+The question we want to answer is can certain physical measurements, *i.e.* the lengths and widths of the iris flower sepal and petal b eused to classify the species of the plant? 
+
+The Species (categorical) variable is the response or outcome variable while the four length measurements are the predictor (quantitative) variables. As usual it is apropriate to begin with some visualizations:
+```{r}
+ggpairs(iris)
+```
+
+**Question:** What do you observe about the data from this figure? 
+
+It is helpful to focus in on some of these plots individually. 
+
+Let's start by looking at each of the four physical measurements seperated by species
+```{r}
+iris %>% ggplot(aes(x=Sepal.Length,color=Species)) + geom_freqpoly()
+```
+
+We can also view this as a boxplot:
+```{r}
+iris %>% ggplot(aes(y=Sepal.Length,x=Species,color=Species)) + geom_boxplot()
+```
+
+**Question:** What do you observe from the last two plots? 
+
+**Exercise:** Now you plot the other three versions. 
+
+**Question:** Do any of the physical measurements clearly vary across species? If so, which ones? 
+
+Here is another intereseting view of the data:
+```{r}
+iris %>% ggplot(aes(x=Petal.Length,y=Petal.Width,color=Species)) + geom_point()
+```
+
+**Question:** What is your observation from the last plot?
+
+**Exercise:** What do you observe if you look at other combinations of the physical measurements with regard to how they vary across species? 
+
+
+**Question:** Do you think we can use the physical measurement variables to predict the species of an iris flower? 
+
+**Question:** What is the biggest difference in this problem compared with the problem of using  predictor variables to predict income in the Wage data? 
 
 ## Gene expression data and classifying cancers
 
