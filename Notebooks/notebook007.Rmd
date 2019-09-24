@@ -1,0 +1,101 @@
+---
+title: "Introduction to Data Modeling"
+output: html_notebook
+---
+
+```{r,message=FALSE,warning=FALSE}
+library(tidyverse)
+library(caret)
+library(broom)
+library(ISLR)
+```
+
+
+# Introduction 
+
+So far we have studied the following steps in the data science workflow:
+
+1) Obtain data
+2) Import data 
+3) Exploratory data analysis: clean, wrangle, summarize, visualize  
+4) Determine questions to ask
+
+The next step is to use modeling in order to answer the questions that arise from an EDA. In a moment we will explain what we mean by modeling. For now, note that what we will discuss has significant relation with traditional probability and statistcs, machine leanring, statistical learning, predictive analytics, artificial intelligence, pattern recognition, data mining, etc. In all of these topics a central goal is to derive insight or understanding from data.  For simplicity, we will refer to any of an assortment of related ideas that seek to derive insight or understanding from data as modeling or data modeling. 
+
+Some of the most useful references for the material we cover on modeling are
+
+1) [An Introduction to Statistical Learning](http://faculty.marshall.usc.edu/gareth-james/ISL/) (Note that there are also video lectures that accompany this book.) 
+2) [Elements of Statistical Learning](https://web.stanford.edu/~hastie/ElemStatLearn/)
+3) [Mathematics for Machine Leanring](https://mml-book.github.io/)
+4) [The Hundred-Page Machine Leanring Book](http://themlbook.com/) 
+5) [An Introduction to Machine Learning with R](http://bit.ly/intromlr)
+
+We will use large parts of the first book as it provides a nice blend of theory and practice. It is also widely regarded as an excellent introduction to statistical learning. The second book is a canonical reference for the theory of statistical (machine) learning, this book is mathematically sophisticated. The third book is a very new and very good reference that you can use to learn most of the mathematics you need in order to understand the presentation in Elements of Statistical Learning. The fourth book provides a clear and concise yet highly readable description of many common data modeling methods. There is a [GitHub repo](https://github.com/aburkov/theMLbook) that contains python code that illustrates the implementation of the methods described in the book. The fifth book provides a convenient (and free) reference for the R implementation of many common data modeling algorithms.   
+
+
+We will proceed in our study of modeling as follows:
+
+1) We begin by considering several motivating examples. For this please read Chapter 1 from [An Introduction to Statistical Learning](http://faculty.marshall.usc.edu/gareth-james/ISL/)
+2) Next, we will describe the main "big picture" ideas, concepts, and terminology of data modeling. For this please read Chapter 2 from [An Introduction to Statistical Learning](http://faculty.marshall.usc.edu/gareth-james/ISL/)
+3) Then, we will look at three specific modeling algorithms or methods in detail. Specifically, we will consider linear regression, lowess regression, and k nearest neighbors. Simultaneously, we will introduce in an intuitive manner the necessary statistical ideas that we need to work with data models. 
+4) Finally, we will examine an assortment of modeling methods or algorithms. Here we will largely ignore theory and focus on dveeloping a thorough yet intuitive understanding of how to use these methods in practice. 
+
+# Some Motivation 
+
+## Wage data and predicting income
+
+We begin by considering the Wage data set that is contained in the ISLR package. This package contains data and code that accompanies the book [An Introduction to Statistical Learning](http://faculty.marshall.usc.edu/gareth-james/ISL/). 
+
+Let's determine the size of the data set and get a sense of what it contains:
+```{r}
+dim(Wage)
+```
+
+```{r}
+head(Wage)
+```
+
+```{r}
+?Wage
+```
+
+The primary question of interest is "what are the factors that influence ones income?" In this context then the wage variable is our outcome or response variable and the other variables are predictors. Things can become complicated very quickly so we will being with a simpler but related question. What is the impact of ones age (quantitative), level of education (categorical), and time (quantitative) on wages? 
+
+Let's begin with some visualizations:
+```{r}
+Wage %>% ggplot(aes(x=age,y=wage)) + geom_point()
+```
+
+**Question:** What do you observe from this data?
+
+```{r}
+Wage %>% ggplot(aes(x=age,y=wage)) + geom_point() + geom_smooth()
+```
+
+**Question:** How does adding the smoothing curve help or hinder in seeing a pattern? 
+
+```{r}
+Wage %>% ggplot(aes(x=year,y=wage)) + geom_point() + geom_smooth(method = "lm")
+```
+
+**Question:** What do you observe about the data from the above graph? 
+
+```{r}
+Wage %>% mutate(ed_level_number=str_extract(education,"\\d")) %>% select(education,ed_level_number,wage) %>%
+  ggplot(aes(x=ed_level_number,y=wage,color=ed_level_number)) + geom_boxplot()
+```
+
+**Question:** What do you observe about the data from the above graph? 
+
+**Question:** Do you think we can use age, year, or education to predict an individuals wage? 
+
+## Iris data and predicting flower species
+
+
+
+## Gene expression data and classifying cancers
+
+
+
+
+
