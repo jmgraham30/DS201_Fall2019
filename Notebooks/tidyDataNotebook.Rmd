@@ -1,0 +1,110 @@
+---
+title: "Introduction to Tidy Data"
+output: html_notebook
+---
+
+
+```{r,message=FALSE,warning=FALSE}
+library(tidyverse)
+library(knitr)
+```
+
+
+# Introduction 
+
+
+The paper [Tidy Data](file:///Users/grahamj7/Downloads/v59i10.pdf) by Hadley Wickham defines the concept of **tidy data.**
+
+The key properties of tidy data are that:
+
+1) each value belongs to a variable and an observation
+2) each variable contains all values of a certain property measured across all observations
+3) each observation contains all values of the variables measured for the respective case. 
+
+The book [R for Data Science](https://r4ds.had.co.nz/tidy-data.html) provides a practical introduction to tidy data with R in mind while the book [Pandas for Everyone](https://github.com/chendaniely/pandas_for_everyone) provides a practical introduction to tody data with Python (using Pandas) in mind. 
+
+
+Our goal in this notebook is to get a feel for what tidy data looks like, and to learn to use R to "tidy" data that is "untidy."
+
+# Tidy Data in Practice
+
+## Gather and Spread
+
+Suppose that we record the mathematics and writing scores for several students in order to determine how well-prepared they are for future courses. One might represent this data (and perhaps it is even convenient to do so) as
+```{r}
+student_grades <- data.frame(Student=c("Anna","John","Catherine"),Math=c(86,43,80),English=c(90,75,82))
+kable(student_grades)
+```
+
+
+The data is **not** tidy. The reason is because each observation corresponds to one student and the relevant variables are Student, Subject, and Grade. In this cas, the Grade variable is spread out across multiple columns. Lucky for us, R contains (in the tidyr package) a number of functions that make it easy to "tidy" this data. For example,
+```{r}
+student_grades_tidy <- student_grades %>% gather(key="Subject",value="Grade",Math,English)
+kable(student_grades_tidy)
+```
+
+**Note:** In this case, we had to "gather" values across multiple columns into a single column. In cases where a variable is spread out across multiple columns, the data set is sometimes said to be in **"wide"** format, the tidied version is then said to be in **"long"** format. 
+
+There is an "inverse" function to gather that is called "spread." It can be used to turn a data set in long format into wide format. If we apply spread to our tidied example data then we will get back to where we started:
+```{r}
+student_grades_tidy %>% spread(key=Subject,value=Grade)
+```
+
+It may be the case that we need to use spread in order to tidy a data set? 
+
+**Question:** Under what circumstances could a data set be untidy such that using spread would make the data tidy? 
+
+Here is an example, 
+```{r}
+candy_df <- data.frame(Candy=c("m&m","m&m","skittle","skittle"),Color=c("brown","brown","red","red"),Measure=c("weight","diameter","weight","diameter"),Value=c(0.2,0.3,0.1,0.4))
+kable(candy_df)
+```
+
+**Question:** What is this data **not** tidy? 
+
+Notice that in this example, each observation is a piece of candy. Thus, here we have an observation occurring across more than one row. Spread will fix this:
+```{r}
+candy_df %>% spread(Measure,Value)
+```
+
+
+# Tibbles
+
+The packages and functions in the  tidyverse family work well with data frames, particularly those in tidy format. However, the tidyverse suite "prefers" a data structure that is an upgraded version of the data frame and is called a **tibble.** Tibbles *are* data frames, but they tweak some older behaviors to make life a little easier. 
+
+Let's look at an example using the tidy version of the student grades data we constructed before. 
+```{r}
+str(student_grades_tidy)
+```
+The call to str shows that this is a data frame. We can convert it to a tibble with the as_tibble function:
+```{r}
+student_grades_tidy_tibble <- as_tibble(student_grades_tidy)
+```
+
+Observe the call to structure:
+```{r}
+str(student_grades_tidy_tibble)
+```
+
+**Question:** What is the difference between the data frame version and the tibble version of the student grades data? 
+
+## the readr functions
+
+Within the tidyverse there is a package called readr with functions such as read_csv that read in data sets now not as regular data frames but as tibbles. 
+
+Let's compare the results using both approaches. 
+
+```{r}
+boston_df <- read.csv("Data/BostonCrime.csv")
+```
+
+
+
+
+
+
+
+
+
+
+
