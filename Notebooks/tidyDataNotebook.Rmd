@@ -95,16 +95,39 @@ Within the tidyverse there is a package called readr with functions such as read
 Let's compare the results using both approaches. 
 
 ```{r}
-boston_df <- read.csv("Data/BostonCrime.csv")
+boston_df <- read.csv("../Data/BostonCrime.csv")
 ```
 
 
+```{r}
+
+str(boston_df)
+```
+
+```{r}
+
+head(boston_df)
+```
 
 
+Now let's use read_csv from readr:
+```{r,message=FALSE,warning=FALSE}
+boston_tibble <- read_csv("../Data/BostonCrime.csv")
+```
 
 
+```{r}
+str(boston_tibble)
+```
+
+```{r}
+head(boston_tibble)
+```
+
+**Question:** What is the difference between the tibble version and the data frame version? 
 
 
-
-
-
+**Note:** It is not required for you to use tibbles instead of data frames. Probably the strongest reason
+ to choose to use tibbles is to avoid converting categorical variables to factors when you read data into R. 
+ 
+More information on tibbles can be found [here](https://cran.r-project.org/web/packages/tibble/vignettes/tibble.html). 
