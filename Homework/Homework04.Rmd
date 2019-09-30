@@ -1,0 +1,74 @@
+---
+title: "Homework 4"
+author: "Your Name Here"
+date: "Friday October 11"
+output: html_notebook
+---
+
+The purpose of this homework is to help you to begin understanding the key concepts, ideas, and methods for data modeling, which is also known as predictive modeling, statistical learning, or machine learning. The homework requires you to read and respond to prompts base on the first two chapters from [An Introduction to Statistical Learning](http://faculty.marshall.usc.edu/gareth-james/ISL/). A pdf of the book can be access a [this link](http://faculty.marshall.usc.edu/gareth-james/ISL/ISLR%20Seventh%20Printing.pdf). Note that lecture videos and corresponding slides for the material in the book can be found at [this link](https://www.r-bloggers.com/in-depth-introduction-to-machine-learning-in-15-hours-of-expert-videos/).    
+
+
+
+# Exercises
+
+1) Answer the following questions about Chapter 1 (only up to and including the section A Brief History of Statistical Learning) of An Introduction to Statistical Learning:
+
+    * To what does *statistical learning* refer? 
+    * Broadly speaking, what is the difference between supervised and unsupervised learning? 
+    * Between the Wage Data, Stock Market Data, and Gene Expression Data which (if any) would correspond to a problem for supervised leanring and which (if any) would correspond to a problem for unsupervised learning? Justify your answers. 
+  
+
+For the next problem you are asked to read Chapter 2 up through and including section 2.2 of  An Introduction to Statistical Learning. If the mathematical notation and concepts do not fully make sense yet it is okay. Just do your best to get a feel for the big picture. Keep a record of what does and what does not make sense and let Dr. Graham know what parts you find most confusing.  
+
+**Note:** The figures and figure captions in the chapter are often easier to understand that the descriptions given in the main paragraphs. 
+  
+2) Define or explain what is meant by the following terms as introduced in Chapter 2 (only up to and including section 2.2) of An Introduction to Statistical Learning:
+
+    * input variable
+    * output variable
+    * predictor 
+    * feature
+    * error term
+    * reducible error
+    * irreducible error
+    * taining data 
+    * overfitting
+    * supervised
+    * unsupervised
+    * clustering
+    * regression
+    * classification 
+    * traning MSE (mean squared error)
+    * test MSE
+    * cross validation
+    * error rate
+  
+  
+3) What is the difference between prediction and inference in the context of modeling? 
+
+4) Between the Wage Data, Stock Market Data, and Gene Expression Data from Chapter 1 of  An Introduction to Statistical Learning to which would you most want to apply clustering? Explain your answer and describe what information about the data would clustering provide insight into. 
+
+5) True or false, regression is a form of supervised learning? 
+
+6) True or false, classification is a form of unsupervised learning? 
+
+7) To what type of response data do you typically apply regression? 
+
+8) TO what type of response data do you typically apply classification? 
+
+9) Which tells you more about overfitting in a model, training error (that is training MSE) or test error (that is test MSE). Explain your answer.  
+
+10) Explain Figure 2.9 in your own words. 
+
+11) Is it always possible to use a more flexible model in order to improve **training** error? Explain why or why not. 
+
+12) Is it always possible to use a more flexible model in order to improve **test** error? Explain why or why not.
+
+13) Describe your understanding of the trade-off between bias and variance.
+
+14) What is error rate used for? 
+
+15) What is KNN and what is it used for? 
+
+
+
