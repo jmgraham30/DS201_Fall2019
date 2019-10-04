@@ -1,0 +1,257 @@
+---
+title: "Basic Review of Statistical Inference"
+output: html_notebook
+---
+
+```{r,warning=FALSE,message=FALSE,echo=FALSE}
+library(tidyverse)
+library(fastR2)
+```
+
+
+# Introduction 
+
+From [Wikipedia](https://en.wikipedia.org/wiki/Statistical_inference): 
+
+Statistical inference makes propositions about a population, using data drawn from the population with some form of sampling. Given a hypothesis about a population, for which we wish to draw inferences, statistical inference consists of (first) selecting a statistical model of the process that generates the data and (second) deducing propositions from the model. Inferential statistical analysis **infers properties of a population**, for example by testing hypotheses and deriving estimates. It is assumed that the observed data set is sampled from a larger population.
+
+More technically, statistical inference is the process of using data analysis to deduce properties of an underlying probability distribution (which is a form of model). 
+
+A key aspect of inferential procedures is in constructing or approximating the **sampling distribution** for sample statistics or model parameters. 
+
+# Traditional Statistics
+
+## One-sample Example
+
+Suppose that we want to know how many times a day students patron Starbucks during the semester. In order to study this question, we randomly select 25 different students on random week days and ask how many times they visited Starbucks that day. Some students will not have visited Starbucks and some will have visited several times. Our goal is to infer the average number of times. 
+
+Here is some fake data:
+```{r}
+set.seed(1234)
+p_mu <- 3
+sig_val <- 1.7
+n <- 25
+x_vals <- rnorm(n,mean=p_mu,sd=sig_val)
+mean_x <- mean(x_vals)
+```
+
+```{r}
+ggplot(data=NULL,mapping=aes(x=x_vals)) + geom_histogram() + geom_vline(xintercept = mean_x)
+```
+
+We see that the sample mean is
+```{r}
+mean_x
+```
+
+We hypothesize that the true population mean is 3. 
+
+**Question:** Does the data provide supporting evidence for this hypothesis? This is the problem we will address. 
+
+## Two-sample Example 
+
+Suppose that we want to measure the effect of the growth of a particular type of plant under two different lighting conditions. 
+
+In order to do this, we conduct the following experiment:
+
+* Obtain 50 young plants all of roughly the same "age" 
+* Divide these into two groups of 25 each 
+* Place one of the groups of 25 plants under lighting condition 1 and place the other group of 25 plants under lighting condition 2 
+* After a certain amount of time, measure the height of each of the 50 plants
+
+One way to compare the outcome is to compute the difference in the mean of the meaures heights between the two groups. 
+
+We will simulate some data to get a feel for this:
+```{r}
+data_df <- data.frame(Light_condition=factor(c(rep("Condition_One",25),rep("Condition_Two",25))),Plant_height=c(rnorm(25,mean=14,sd=3.7),rnorm(25,mean=12.7,sd=3.7)))
+```
+
+
+A plot is helpful:
+```{r}
+data_df %>%  ggplot(aes(x=Light_condition,y=Plant_height)) + geom_boxplot()
+```
+
+
+**Question:** Is the observed difference due to some real effect or could it be due to random chance? This is the problem of statistical significance.
+
+Here is a plot of the mean for each lighting condition:
+```{r}
+data_df %>% group_by(Light_condition) %>% summarise(mean_height=mean(Plant_height)) %>% ggplot(aes(x=Light_condition,y=mean_height)) +
+  geom_bar(stat = "identity")
+```
+
+
+# Traditional Inference
+
+There are two common inferrential procedures, **hypothesis testing** and **confidence intervals** for estimates. We will look at some examples and then explain in a general sense what is the meaning of these terms.  
+
+
+## One-sample Example
+
+In our Starbucks example, we use the sample mean as an estimate for the population mean and then derive a confidence interval that provides a range of potential values of the unknown population mean.
+
+There are different ways to do this depending on what is know or assumed to be true about the data. 
+
+If we can reasonably assume that the data is normally distributed with known variance (or standard deviation), then
+a 95\% confidence interval for the population mean is computed as follows:
+```{r}
+ci_percent <- 0.95
+alpha_half <- (1 - ci_percent)/2
+z_alpha_half <- qnorm(1-alpha_half)
+CI_result <- mean_x + c(-1,1)*z_alpha_half*sig_val/sqrt(n)
+CI_result
+```
+
+If we reasonably assume that the data is normally distributed with unknown variance (or standard deviation), then
+a 95\% confidence interval for the population mean is computed as follows:
+```{r}
+std_err <- sd(x_vals)
+t_alpha_half <- qt(1-alpha_half,n-1)
+CI_result_t <- mean_x + c(-1,1)*t_alpha_half*std_err/sqrt(n)
+CI_result_t
+```
+
+This information plus more can be obtained from the t.test function in R of which we will have more to say in the future. 
+```{r}
+confint(t.test(x_vals,mu=p_mu,conf.level = 0.95))
+```
+
+Shortly, we will see a third approach that makes fewer assumptions about the data, the so-called **bootstrap** approach. The bootstrap approach does not require us to remember the analytic formulas derived from asymptotic analysis of certain known distributions. 
+
+## Two-sample Example
+
+In the "plant growth under different lighting conditions" example, we are interested in **the difference in means** between the two samples. 
+
+A common way to study this problem is by a t-test:
+```{r}
+x <- data_df %>% filter(Light_condition == "Condition_One") %>% select(Plant_height) %>% unlist()
+y <- data_df %>% filter(Light_condition == "Condition_Two") %>% select(Plant_height) %>% unlist()
+
+(mean_xx<-mean(x))
+(mean_yy<-mean(y))
+(sample_diff <- mean_xx - mean_yy)
+```
+
+
+```{r}
+confint(t.test(x,y))
+```
+
+# Bootstrap Confidence Intervals
+
+## One-sample Example
+
+```{r}
+boot_result <- do(5000)*mean(sample(x_vals,replace = TRUE))
+head(boot_result)
+```
+
+```{r}
+boot_result %>% ggplot(aes(x=mean)) + geom_histogram()
+```
+
+
+```{r}
+CI_result_boot <- stats::quantile(boot_result$mean,c(0.025,0.975))
+
+CI_result_boot
+```
+
+
+## Two-sample Example
+
+```{r}
+N <- 5000
+boot_mean_diffs <- numeric(N)
+for (i in 1:N){
+  temp_x <- sample(x,replace = T)
+  temp_y <- sample(y,replace = T)
+  boot_mean_diffs[i] <- mean(temp_x) - mean(temp_y)
+}
+quantile(boot_mean_diffs,c(0.025,0.975))
+```
+
+
+# Permutation Test
+
+## Two-sample Example
+
+```{r}
+factorial(50)
+```
+
+
+```{r}
+N <- 5000
+samp_diffs <- numeric(N)
+for (i in 1:N){
+  m_vals <- sample(data_df$Plant_height)
+  h_x <- m_vals[1:25]
+  h_y <- m_vals[26:50]
+  samp_diffs[i] <- mean(h_x) - mean(h_y) 
+}
+samp_diffs_df <- data.frame(samp_diffs=samp_diffs)
+```
+
+```{r}
+samp_diffs_df %>% ggplot(aes(x=samp_diffs)) + 
+  geom_histogram() + 
+  geom_vline(xintercept = sample_diff)
+```
+
+
+
+```{r}
+2*length(samp_diffs_df[samp_diffs_df$samp_diffs <= sample_diff , ])/nrow(samp_diffs_df)
+```
+
+
+The traditional method for testing this is with a two-sample t-test:
+```{r}
+t.test(x,y)
+```
+
+## One-sample Example
+
+### Bootstrap t-test
+
+```{r}
+(test_t <- (mean_x - p_mu)/(sd(x_vals)/sqrt(n)))
+```
+
+```{r}
+boot_t_vals <- numeric(5000)
+for (i in 1:5000){
+  temp_x <- sample(x_vals,replace = TRUE)
+  boot_t_vals[i] <- (mean(temp_x) - p_mu)/(sd(temp_x)/sqrt(n))
+}
+```
+
+```{r}
+ggplot(data=NULL,mapping=aes(x=boot_t_vals)) + geom_histogram() + geom_vline(xintercept = test_t)
+```
+
+```{r}
+boot_p <- sum(boot_t_vals > test_t)/length(boot_t_vals)
+boot_p
+```
+
+
+The traditional method for testing this is with a one-sampel t-test:
+```{r}
+t.test(x_vals,mu=p_mu,conf.level = 0.95)
+```
+
+### Permutation test
+
+```{r}
+test_x <- x_vals - p_mu
+(num_plus <- sum(sign(test_x) > 0))
+```
+
+
+```{r}
+
+2*(pbinom(num_plus,n,p=0.5))
+```
