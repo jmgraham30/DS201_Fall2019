@@ -232,11 +232,16 @@ for (i in 1:5000){
 ggplot(data=NULL,mapping=aes(x=boot_t_vals)) + geom_histogram() + geom_vline(xintercept = test_t)
 ```
 
+
+Compute the propotion of bootstrap statistic values that are greater than the sample value
 ```{r}
-boot_p <- sum(boot_t_vals > test_t)/length(boot_t_vals)
-boot_p
+sum(boot_t_vals > test_t)/length(boot_t_vals)
 ```
 
+Compute the propotion of bootstrap statistic values that are less than the sample value
+```{r}
+sum(boot_t_vals < test_t)/length(boot_t_vals)
+```
 
 The traditional method for testing this is with a one-sampel t-test:
 ```{r}

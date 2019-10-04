@@ -1,0 +1,89 @@
+---
+title: "Data Modeling: General Ideas"
+output: html_notebook
+---
+
+```{r,message=FALSE,warning=FALSE,echo=FALSE}
+library(tidyverse)
+library(ISLR)
+```
+
+# Introduction 
+
+If you recall from our earlier discussion, modeling is a key component in the basic data science workflow:
+![ ](../Figures/data-science-solutions-workflow.jpg){width=60%}
+
+We have also seen example data sets where a model based on the data may help us to answer specific questions. 
+
+There are several common key steps in the modeling process that we will cover in this course:
+
+1) Model training which is also called model fitting or parameter estimation. This typically involves implementing some kind of training algorithm. 
+2) Model validation. At this stage we assess the accuracy of the model and determine how useful is the model in making predictions on previously unseen data, that is data that is not used in training the model. 
+3) Model selection, feature selection, and hyperparameter tuning. Here the concern is to determine among a set of competing model choices, or a set of competing variables which should be used for the application we are interested in. 
+
+**Note:** There are often also preprocessing steps involved in the modeling process. This is includes transforming the data, *e.g.* centering or scaling some variables, dimension reduction, etc. We will come back to these topics usually in specific contexts. 
+
+# Introduction to Supervised Learning
+
+In this section we will follow Chapter 2 from [An Introduction to Statistical Learning](http://faculty.marshall.usc.edu/gareth-james/ISL/) but Chapter 2 of [Elements of Statistical Learning](https://web.stanford.edu/~hastie/ElemStatLearn/) is also highly recommended. 
+
+In **supervised learning** our data is formatted so that there is a response variable $Y$ and one or more predictor variables collectively denoted as $X$. We assume that there is a relationship between the response $Y$ and predictor(s) $X$ of the form
+
+$Y = f(X) + \epsilon,$
+
+where $f$ is some fixed but unknown function (often from a specific family of functions that are uniquely determined by some set of parameters) and $\epsilon$ is a random error term which is indepedent of $X$ and has zero mean (or expected value). The error term may be thought of as representing inherent uncertainty that is inevitable in most practical applications. 
+
+## Examples
+
+Consider the following data:
+```{r}
+linear_df <- data.frame(x=rnorm(45,mean=2,sd=3.5))
+linear_df <- linear_df %>% mutate(y=2*x+3+rnorm(45,sd=2))
+linear_df %>% ggplot(aes(x=x,y=y)) + geom_point()
+```
+
+We might suppose that 
+
+$Y = mX + b + \epsilon$
+
+As another example, consider the data represented in the left side of the following figure:
+![ ](../Figures/2.2.png)
+
+We might suppose that 
+
+$Y = f(X) + \epsilon,$
+
+where $f$ is some polynomial function. 
+
+**Note:** In both of the previous examples, the response variable was continuous. It may be the case, as with the iris data set that the response variable is categorical. 
+
+
+## The Supervised Learning Problem
+
+In supervised learning, the task is, given an assumed model $Y = f(X) + \epsilon$ to **approximate** $f$ with a function $\hat{f}$ such that 
+
+$\hat{Y} = \hat{f}(X)$ 
+
+represnets a prediction $\hat{Y}$ for $Y$. 
+
+In the context of the two examples,
+```{r}
+linear_df %>% ggplot(aes(x=x,y=y)) + geom_point() + 
+  geom_smooth(method = "lm",se=FALSE)
+```
+The $y$-values along the line make up the predictions corresponding to the $y$-values in the data points. 
+
+In the right of the following figure:
+![ ](../Figures/2.2.png)
+
+
+
+The $y$-values along the curve  make up the predictions corresponding to the $y$-values in the data points.
+
+There three questions:
+
+1) What estimate $f$?
+2) How is the estimate $\hat{f}$ constructed? 
+3) How accurate are the predictions made using the estimate $\hat{f}$?
+
+This is the problem of **supervised learning.**
