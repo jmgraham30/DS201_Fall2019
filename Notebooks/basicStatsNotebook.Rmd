@@ -15,21 +15,25 @@ From [Wikipedia](https://en.wikipedia.org/wiki/Statistical_inference):
 
 Statistical inference makes propositions about a population, using data drawn from the population with some form of sampling. Given a hypothesis about a population, for which we wish to draw inferences, statistical inference consists of (first) selecting a statistical model of the process that generates the data and (second) deducing propositions from the model. Inferential statistical analysis **infers properties of a population**, for example by testing hypotheses and deriving estimates. It is assumed that the observed data set is sampled from a larger population.
 
-More technically, statistical inference is the process of using data analysis to deduce properties of an underlying probability distribution (which is a form of model). 
+More technically, statistical inference is the process of using data analysis to deduce properties of an underlying **probability distribution** (which is a form of model). 
 
 A key aspect of inferential procedures is in constructing or approximating the **sampling distribution** for sample statistics or model parameters. 
+
+**Point:** Explain the idea of a sampling distribution with a concrete example. 
+
+**Note:** In supervised learning, the goal is usually predictin rather than inference although inferential prociedures might still play a roll in model evaluation and assessment. 
 
 # Traditional Statistics
 
 ## One-sample Example
 
-Suppose that we want to know how many times a day students patron Starbucks during the semester. In order to study this question, we randomly select 25 different students on random week days and ask how many times they visited Starbucks that day. Some students will not have visited Starbucks and some will have visited several times. Our goal is to infer the average number of times. 
+Suppose that we want to know how many times a day, on a typical week day, students patron Starbucks during the semester. In order to study this question, we randomly select 25 different students on random week days and ask how many times they visited Starbucks that day. Some students will not have visited Starbucks and some will have visited several times. **Our goal is to infer the average number of times.** 
 
-Here is some fake data:
+Here is some (fake) data:
 ```{r}
 set.seed(1234)
 p_mu <- 3
-sig_val <- 1.7
+sig_val <- 1.5
 n <- 25
 x_vals <- rnorm(n,mean=p_mu,sd=sig_val)
 mean_x <- mean(x_vals)
@@ -44,13 +48,13 @@ We see that the sample mean is
 mean_x
 ```
 
-We hypothesize that the true population mean is 3. 
+We might hypothesize that the true population mean is 3. 
 
-**Question:** Does the data provide supporting evidence for this hypothesis? This is the problem we will address. 
+**Question:** Does the data provide supporting evidence for this hypothesis? If we use the sample mean as an estimate for the population mean, how reliable of an estimate to the population value is provided by using the sample mean. This is the problem we will address. 
 
 ## Two-sample Example 
 
-Suppose that we want to measure the effect of the growth of a particular type of plant under two different lighting conditions. 
+Suppose that we want to measure the effect of the growth of a particular type of plant under two different lighting conditions.
 
 In order to do this, we conduct the following experiment:
 
@@ -59,7 +63,7 @@ In order to do this, we conduct the following experiment:
 * Place one of the groups of 25 plants under lighting condition 1 and place the other group of 25 plants under lighting condition 2 
 * After a certain amount of time, measure the height of each of the 50 plants
 
-One way to compare the outcome is to compute the difference in the mean of the meaures heights between the two groups. 
+One way to compare the outcome is to compute the difference in the mean of the meaured heights between the two groups. 
 
 We will simulate some data to get a feel for this:
 ```{r}
@@ -84,31 +88,31 @@ data_df %>% group_by(Light_condition) %>% summarise(mean_height=mean(Plant_heigh
 
 # Traditional Inference
 
-There are two common inferrential procedures, **hypothesis testing** and **confidence intervals** for estimates. We will look at some examples and then explain in a general sense what is the meaning of these terms.  
+There are two common inferrential procedures, **hypothesis testing** and **confidence intervals** for estimates. We will look at some examples and then explain in a general sense what is the meaning of these terms.  Our preference here is to use simulation and resampling rather than formal analytic constructs to understand tests of hypothesis and confidence intervals. 
 
 
 ## One-sample Example
 
-In our Starbucks example, we use the sample mean as an estimate for the population mean and then derive a confidence interval that provides a range of potential values of the unknown population mean.
+In our Starbucks example, we use the sample mean as an estimate for the population mean and then derive a confidence interval that provides a range of potential values of the (unknown) population mean.
 
 There are different ways to do this depending on what is know or assumed to be true about the data. 
 
-If we can reasonably assume that the data is normally distributed with known variance (or standard deviation), then
+If we can reasonably assume that the data is **normally distributed with known variance** (or standard deviation), then
 a 95\% confidence interval for the population mean is computed as follows:
 ```{r}
 ci_percent <- 0.95
 alpha_half <- (1 - ci_percent)/2
 z_alpha_half <- qnorm(1-alpha_half)
-CI_result <- mean_x + c(-1,1)*z_alpha_half*sig_val/sqrt(n)
+CI_result <- mean_x + c(-1,1)*z_alpha_half*sig_val/sqrt(n) # "z" formula for confidence interval 
 CI_result
 ```
 
-If we reasonably assume that the data is normally distributed with unknown variance (or standard deviation), then
+If we reasonably assume that the data is normally distributed with **unknown** variance (or standard deviation), then
 a 95\% confidence interval for the population mean is computed as follows:
 ```{r}
 std_err <- sd(x_vals)
 t_alpha_half <- qt(1-alpha_half,n-1)
-CI_result_t <- mean_x + c(-1,1)*t_alpha_half*std_err/sqrt(n)
+CI_result_t <- mean_x + c(-1,1)*t_alpha_half*std_err/sqrt(n) # "t" formula for confidence interval
 CI_result_t
 ```
 
@@ -116,6 +120,7 @@ This information plus more can be obtained from the t.test function in R of whic
 ```{r}
 confint(t.test(x_vals,mu=p_mu,conf.level = 0.95))
 ```
+For now do not worry about the details of the functions t.test or confint, we just want to use the result for comparison with the bootstrap and permutation test procedures discussed later. One thing to note is that the t.test is based on formulas derived using asymptotic analysis of analytical distribution functions. 
 
 Shortly, we will see a third approach that makes fewer assumptions about the data, the so-called **bootstrap** approach. The bootstrap approach does not require us to remember the analytic formulas derived from asymptotic analysis of certain known distributions. 
 
@@ -123,7 +128,7 @@ Shortly, we will see a third approach that makes fewer assumptions about the dat
 
 In the "plant growth under different lighting conditions" example, we are interested in **the difference in means** between the two samples. 
 
-A common way to study this problem is by a t-test:
+A common way to study this problem is by using a t-test:
 ```{r}
 x <- data_df %>% filter(Light_condition == "Condition_One") %>% select(Plant_height) %>% unlist()
 y <- data_df %>% filter(Light_condition == "Condition_Two") %>% select(Plant_height) %>% unlist()
@@ -137,29 +142,70 @@ y <- data_df %>% filter(Light_condition == "Condition_Two") %>% select(Plant_hei
 ```{r}
 confint(t.test(x,y))
 ```
+Again, do not worry about the details of confint and t.test, we just want to use this result as a point of comparison for the bootstrap and permutation test discussed below. 
+
 
 # Bootstrap Confidence Intervals
 
-## One-sample Example
+Mathematical statistics derives analytic formulas that can be used to compute values of interest in statistical inference. This is often done by making specific assumptions or using asymptotic results to derive or approximate the sampling distributions of the most common sample statistics. For example, this approach leads to the t-test that we hinted at before. 
+
+Instead, we will take a computational approach that uses simulation and resampling procedures to approximate t**he sampling distribution of a statistic of interest. There are two common resampling methods:
+
+1) Bootstrap methods which use **sampling with replacement** and is typically used to approximate confidence intervals although bootstrap methods can be used for hypothesis testing
+2) Permutation tests which use **sampling without replacement** and are used for testing statistical hypotheses and approximating p-values 
+
+Resampling methods are well-suited for applications in data science since
+1) in these applications there is often access to a large amount of data
+2) the distributional assumptions necessary for analytical procedures can't be made
+3) the statistics of interest do not follow known distributions
+
+We look at the bootstrap method first and apply it to the two example problems we have introduced. 
+
+## Bootstrap 
+
+**The Bootstrap Idea:** The original sample approximates the population from which it was drawn. So resamples from this sample approximate what we would get if we took many samples from the population. The bootstrap distribution, based on many resamples, approximates the sampling distribution of the statistic, based on many samples. 
+
+**Bootstrap for a Single Population:** Given a sample of size $n$ from a population:
+
+1) Draw a resample of size $n$ with replacement from the sample. Compute a statistic that describes the sample, for example the sample mean.
+2) Repeat this resampling process many times, say 5,000 or 10,000. 
+3) Construct the boostrap distribution of the statistic. Inspect its center, spread, and shape. 
+
+### One-sample Example Bootstrap 
 
 ```{r}
-boot_result <- do(5000)*mean(sample(x_vals,replace = TRUE))
+boot_result <- do(5000)*mean(sample(x_vals,replace = TRUE)) # repeatedly sample with replacement and compute mean
 head(boot_result)
 ```
+
+Here is a hisogram for our bootstrap resampled means that illustrates what the bootstrap distribution looks like
 
 ```{r}
 boot_result %>% ggplot(aes(x=mean)) + geom_histogram()
 ```
 
-
+We can use this to approximate the confidence interval for the mean by approximating the *bootstrap percentile  confidence interval* by computing the percentiles from our resampled bootstrap means. 
 ```{r}
 CI_result_boot <- stats::quantile(boot_result$mean,c(0.025,0.975))
 
 CI_result_boot
 ```
 
+Compare this result with what we obtained using analytic formulas:
+z-formula
+```{r}
+CI_result
+```
 
-## Two-sample Example
+t-formula
+```{r}
+CI_result_t
+```
+
+A two-sample boostrap works in a similar fashion but now we just have to take resamples from multiple populations. We demonstrate this with an example. 
+
+
+### Two-sample Example Bootstrap
 
 ```{r}
 N <- 5000
@@ -172,21 +218,49 @@ for (i in 1:N){
 quantile(boot_mean_diffs,c(0.025,0.975))
 ```
 
+Compare with results obtained from the analytically derived t-test method:
+```{r}
+confint(t.test(x,y))
+```
 
-# Permutation Test
+## Permutation Test
 
-## Two-sample Example
+Before we explain the idea of permutation tests, let's recall the general idea of hypothesis testing (aka significance testing). 
 
+The **null hypothesis**, denoted $H_{0}$, is a statement that corresponds to  no real effect. This is the status quo, in the absence of the data providing convincing evidence to the contrary. The **alternative hypothesis**, denoted $H_{A}$, is a statement that there is a real effect. The data may provide convincing evidence that this hypothesis is true. 
+
+In statistical hypothesis testing we seek to determine if the data provides strong enough evidence to **reject** the null hypothesis. Thus there are only two options: Reject the null or fail to reject the null. 
+
+Let's think about this in the context of our plant growth example. In this example
+
+$H_{0}$ - there is no significance difference in growing plants under the two different lighting conditions, mathematically this is stated as the difference in population means is zero
+
+$H_{A}$ - there is a significance difference in growing plants under the two different lighting conditions, mathematically this is stated as the difference in population means is non-zero
+
+We must make a decision based on out data whether to reject of fail to reject the null hypothesis. This decision is typically made using a confidence level and corresponding p-value. The confidence level and p-value provide a threshold for deciding when, under the assumption that the null hypothesis is true, the outcome (*e.g.* sample statistic value) observed from the sample data is **exceptionally** rare.  
+
+**Algorithm for Permutation Test**
+
+1) Compute the observed value of the relevant sample statistic
+2) Randomly permute the data (*i.e.* sample with replacement). Compute the sample statistic again using the permuted data. 
+3) Repeat the previous step many times.
+4) The approximate p-value is the proportion of resampled statistic values that are "at least as extreme" as the observed value computed in step 1. 
+
+The permutation test is easier to understand in the two-sample case so we begin with it. 
+
+### Two-sample Example Permutation Test
+
+Notice that the total number of possible permutations from 50 observations is:
 ```{r}
 factorial(50)
 ```
-
+We don't actually need to consider all possible permutations to obtain an accurante approximation for a p-value.  
 
 ```{r}
 N <- 5000
 samp_diffs <- numeric(N)
 for (i in 1:N){
-  m_vals <- sample(data_df$Plant_height)
+  m_vals <- sample(data_df$Plant_height) # samp without replacement
   h_x <- m_vals[1:25]
   h_y <- m_vals[26:50]
   samp_diffs[i] <- mean(h_x) - mean(h_y) 
@@ -194,6 +268,7 @@ for (i in 1:N){
 samp_diffs_df <- data.frame(samp_diffs=samp_diffs)
 ```
 
+We can visualize the permutation distribution of the resampled difference in means:
 ```{r}
 samp_diffs_df %>% ggplot(aes(x=samp_diffs)) + 
   geom_histogram() + 
@@ -201,25 +276,28 @@ samp_diffs_df %>% ggplot(aes(x=samp_diffs)) +
 ```
 
 
-
 ```{r}
-2*length(samp_diffs_df[samp_diffs_df$samp_diffs <= sample_diff , ])/nrow(samp_diffs_df)
+2*(sum(samp_diffs_df$samp_diffs <= sample_diff))/N
 ```
 
 
-The traditional method for testing this is with a two-sample t-test:
+Using the traditional method for testing this is with a two-sample t-test:
 ```{r}
-t.test(x,y)
+t.test(x,y)$p.value
 ```
 
-## One-sample Example
 
 ### Bootstrap t-test
 
+As we mentioned the bootstrap can be used to conduct hypothesis testing. It works by selecting an appropriate sample statistic. For example, if we compute a t-statistic the bootstrap leads to a bootstrap t-test. 
+
+Let's look at this in the context of our one-sample Starbucks data:
+First we compute the observed sample t-value
 ```{r}
 (test_t <- (mean_x - p_mu)/(sd(x_vals)/sqrt(n)))
 ```
 
+Now do the bootstrap resampling (remember this is sampling with replacement)
 ```{r}
 boot_t_vals <- numeric(5000)
 for (i in 1:5000){
@@ -228,10 +306,11 @@ for (i in 1:5000){
 }
 ```
 
+We can visualize the bootstrap t-distribution
 ```{r}
 ggplot(data=NULL,mapping=aes(x=boot_t_vals)) + geom_histogram() + geom_vline(xintercept = test_t)
 ```
-
+How likely is it to obtain the observed t-value assuming the null hypothesis?
 
 Compute the propotion of bootstrap statistic values that are greater than the sample value
 ```{r}
@@ -248,8 +327,13 @@ The traditional method for testing this is with a one-sampel t-test:
 t.test(x_vals,mu=p_mu,conf.level = 0.95)
 ```
 
-### Permutation test
+We would fail to reject the null hypothesis. 
 
+### One-sample Example Permutation Test
+
+A one-sample permutation test works by simply looking at the permutation of all possible assignments of positive or negative to the elements in the sample data and then asking what is the probability of getting the observed number of positive values assuming that either sign is equally likely. 
+
+For example
 ```{r}
 test_x <- x_vals - p_mu
 (num_plus <- sum(sign(test_x) > 0))
@@ -260,3 +344,4 @@ test_x <- x_vals - p_mu
 
 2*(pbinom(num_plus,n,p=0.5))
 ```
+Again, we fail to reject the null hypothesis. 
