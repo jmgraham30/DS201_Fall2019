@@ -202,6 +202,19 @@ t-formula
 CI_result_t
 ```
 
+Using the bootstrap percentile confidence interval to estimate a confidence interval for a parameter might lead to inaccuracy. There are adjustments that can be made to improve accuracy and these are implemented in the boot package for R which contains function to carry out the bootstrap and compute bootstrap confidence intervals. Here is an example use:
+```{r,message=FALSE,warning=FALSE}
+library(boot)
+```
+
+```{r}
+my_mean_w <- function(x,w) sum(x*w)
+
+boot_CI <- boot.ci(boot(data=x_vals, statistic=my_mean_w, R=5000,stype = "w"), conf = 0.95,type="basic")
+
+boot_CI
+```
+
 A two-sample boostrap works in a similar fashion but now we just have to take resamples from multiple populations. We demonstrate this with an example. 
 
 
