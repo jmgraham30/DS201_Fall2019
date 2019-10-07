@@ -37,7 +37,7 @@ kable(student_grades)
 ```
 
 
-The data is **not** tidy. The reason is because each observation corresponds to one student and the relevant variables are Student, Subject, and Grade. In this cas, the Grade variable is spread out across multiple columns. Lucky for us, R contains (in the tidyr package) a number of functions that make it easy to "tidy" this data. For example,
+The data is **not** tidy. The reason is because each observation should correspond to a test outcome where the relevant variables are Student, Subject, and Grade. In this cas, the Grade variable is spread out across multiple columns. Lucky for us, R contains (in the tidyr package) a number of functions that make it easy to "tidy" this data. For example,
 ```{r}
 student_grades_tidy <- student_grades %>% gather(key="Subject",value="Grade",Math,English)
 kable(student_grades_tidy)
