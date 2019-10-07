@@ -342,6 +342,7 @@ t.test(x_vals,mu=p_mu,conf.level = 0.95)
 
 We would fail to reject the null hypothesis. 
 
+
 ### One-sample Example Permutation Test
 
 A one-sample permutation test works by simply looking at the permutation of all possible assignments of positive or negative to the elements in the sample data and then asking what is the probability of getting the observed number of positive values assuming that either sign is equally likely. 
