@@ -27,14 +27,14 @@ A key aspect of inferential procedures is in constructing or approximating the *
 
 ## One-sample Example
 
-Suppose that we want to know how many times a day, on a typical week day, students patron Starbucks during the semester. In order to study this question, we randomly select 25 different students on random week days and ask how many times they visited Starbucks that day. Some students will not have visited Starbucks and some will have visited several times. **Our goal is to infer the average number of times.** 
+Suppose that we want to know how many times a day, on a typical week day, students patron Starbucks during the semester. In order to study this question, we randomly select 30 different students on random week days and ask how many times they visited Starbucks that day. Some students will not have visited Starbucks and some will have visited several times. **Our goal is to infer the average number of times.** 
 
 Here is some (fake) data:
 ```{r}
-set.seed(1234)
+set.seed(4321)
 p_mu <- 3
 sig_val <- 1.5
-n <- 25
+n <- 30
 x_vals <- rnorm(n,mean=p_mu,sd=sig_val)
 mean_x <- mean(x_vals)
 ```
@@ -290,7 +290,7 @@ samp_diffs_df %>% ggplot(aes(x=samp_diffs)) +
 
 
 ```{r}
-2*(sum(samp_diffs_df$samp_diffs <= sample_diff))/N
+2*(sum(samp_diffs_df$samp_diffs >= sample_diff))/N
 ```
 
 
@@ -298,7 +298,7 @@ Using the traditional method for testing this is with a two-sample t-test:
 ```{r}
 t.test(x,y)$p.value
 ```
-
+In either case would reject the null hypothesis that there is no difference in the means. 
 
 ### Bootstrap t-test
 
@@ -315,7 +315,7 @@ Now do the bootstrap resampling (remember this is sampling with replacement)
 boot_t_vals <- numeric(5000)
 for (i in 1:5000){
   temp_x <- sample(x_vals,replace = TRUE)
-  boot_t_vals[i] <- (mean(temp_x) - p_mu)/(sd(temp_x)/sqrt(n))
+  boot_t_vals[i] <- (mean(temp_x) - mean_x)/(sd(temp_x)/sqrt(n))
 }
 ```
 
@@ -325,15 +325,12 @@ ggplot(data=NULL,mapping=aes(x=boot_t_vals)) + geom_histogram() + geom_vline(xin
 ```
 How likely is it to obtain the observed t-value assuming the null hypothesis?
 
-Compute the propotion of bootstrap statistic values that are greater than the sample value
-```{r}
-sum(boot_t_vals > test_t)/length(boot_t_vals)
-```
 
-Compute the propotion of bootstrap statistic values that are less than the sample value
+Compute the propotion of bootstrap statistic values that are at least as extreme as the observed 
 ```{r}
-sum(boot_t_vals < test_t)/length(boot_t_vals)
+sum(boot_t_vals <= test_t)/N
 ```
+This gives an approximation to the one-sided p-value.  
 
 The traditional method for testing this is with a one-sampel t-test:
 ```{r}
