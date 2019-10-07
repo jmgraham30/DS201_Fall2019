@@ -64,7 +64,9 @@ In supervised learning, the task is, given an assumed model $Y = f(X) + \epsilon
 
 $\hat{Y} = \hat{f}(X)$ 
 
-represnets a prediction $\hat{Y}$ for $Y$. 
+represents a prediction $\hat{Y}$ for $Y$. 
+
+**Note:** The difference $Y - \hat{Y}$ is often called the *error* or *residual*.  
 
 In the context of the two examples,
 ```{r}
@@ -73,12 +75,20 @@ linear_df %>% ggplot(aes(x=x,y=y)) + geom_point() +
 ```
 The $y$-values along the line make up the predictions corresponding to the $y$-values in the data points. 
 
+We can plot the errors or residuals with
+```{r}
+y_hats <- predict(lm(y~x,data=linear_df))
+linear_df %>% ggplot(aes(x=x,y=y)) + geom_point() + 
+  geom_smooth(method = "lm",se=FALSE) + 
+  geom_segment(aes(xend = x, yend = y_hats))
+```
+
 In the right of the following figure:
 ![ ](../Figures/2.2.png)
 
 
 
-The $y$-values along the curve  make up the predictions corresponding to the $y$-values in the data points.
+The $y$-values along the curve  make up the predictions corresponding to the $y$-values in the data points. The corresponding residuals are also shown. 
 
 There three questions:
 
@@ -87,3 +97,15 @@ There three questions:
 3) How accurate are the predictions made using the estimate $\hat{f}$?
 
 This is the problem of **supervised learning.**
+
+## Why Estimate $f$?
+
+There are two main reasons for estimating $f$:
+
+1) Prediction - Here the goal is to determine likely response values (at least approximately) in cases where the predictor values are known but the corresponding (distribution of) response values can not be measured directly. 
+
+2) Inference - Here the goal is to understand the nature of the specific relationship between the response $Y$ and the predictor(s) $X$. 
+
+A key distinction between prediction and inference is that with prediction, the specific form of $\hat{f}$ is not important, only the degree of accuracy of resulting predictions. On the other hand, the specific form of $\hat{f}$ does matter in problems of inference. 
+
+While the main focus of this course is on problems of prediction, we will now pause to briefly review some concepts from basic statistics and (re-)examine inference in that context.  
