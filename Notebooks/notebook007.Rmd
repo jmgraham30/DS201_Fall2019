@@ -27,8 +27,8 @@ Some of the most useful references for the material we cover on modeling are
 
 1) [An Introduction to Statistical Learning](http://faculty.marshall.usc.edu/gareth-james/ISL/) (Note that there are also video lectures that accompany this book.) 
 2) [Elements of Statistical Learning](https://web.stanford.edu/~hastie/ElemStatLearn/)
-3) [Mathematics for Machine Leanring](https://mml-book.github.io/)
-4) [The Hundred-Page Machine Leanring Book](http://themlbook.com/) 
+3) [Mathematics for Machine Learning](https://mml-book.github.io/)
+4) [The Hundred-Page Machine Learning Book](http://themlbook.com/) 
 5) [An Introduction to Machine Learning with R](http://bit.ly/intromlr)
 
 We will use large parts of the first book as it provides a nice blend of theory and practice. It is also widely regarded as an excellent introduction to statistical learning. The second book is a canonical reference for the theory of statistical (machine) learning, this book is mathematically sophisticated. The third book is a very new and very good reference that you can use to learn most of the mathematics you need in order to understand the presentation in Elements of Statistical Learning. The fourth book provides a clear and concise yet highly readable description of many common data modeling methods. There is a [GitHub repo](https://github.com/aburkov/theMLbook) that contains python code that illustrates the implementation of the methods described in the book. The fifth book provides a convenient (and free) reference for the R implementation of many common data modeling algorithms.   
