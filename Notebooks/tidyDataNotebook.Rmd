@@ -21,7 +21,7 @@ The key properties of tidy data are that:
 2) each variable contains all values of a certain property measured across all observations
 3) each observation contains all values of the variables measured for the respective case. 
 
-The book [R for Data Science](https://r4ds.had.co.nz/tidy-data.html) provides a practical introduction to tidy data with R in mind while the book [Pandas for Everyone](https://github.com/chendaniely/pandas_for_everyone) provides a practical introduction to tody data with Python (using Pandas) in mind. 
+The book [R for Data Science](https://r4ds.had.co.nz/tidy-data.html) provides a practical introduction to tidy data with R in mind while the book [Pandas for Everyone](https://github.com/chendaniely/pandas_for_everyone) provides a practical introduction to tidy data with Python (using Pandas) in mind. 
 
 
 Our goal in this notebook is to get a feel for what tidy data looks like, and to learn to use R to "tidy" data that is "untidy."
@@ -88,7 +88,7 @@ str(student_grades_tidy_tibble)
 
 **Question:** What is the difference between the data frame version and the tibble version of the student grades data? 
 
-## the readr functions
+## The readr functions
 
 Within the tidyverse there is a package called readr with functions such as read_csv that read in data sets now not as regular data frames but as tibbles. 
 
