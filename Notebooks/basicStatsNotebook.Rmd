@@ -21,7 +21,7 @@ A key aspect of inferential procedures is in constructing or approximating the *
 
 **Point:** Explain the idea of a sampling distribution with a concrete example. 
 
-**Note:** In supervised learning, the goal is usually predictin rather than inference although inferential prociedures might still play a roll in model evaluation and assessment. 
+**Note:** In supervised learning, the goal is usually prediction rather than inference although inferential procedures might still play a roll in model evaluation and assessment. 
 
 # Traditional Statistics
 
@@ -48,7 +48,7 @@ We see that the sample mean is
 mean_x
 ```
 
-We might hypothesize that the true population mean is 3. 
+We might hypothesize that the true population mean is 3, and in fact this is the case in this example becuase we sampled the data from a normal distribution with mean of 3. 
 
 **Question:** Does the data provide supporting evidence for this hypothesis? If we use the sample mean as an estimate for the population mean, how reliable of an estimate to the population value is provided by using the sample mean. This is the problem we will address. 
 
@@ -88,7 +88,7 @@ data_df %>% group_by(Light_condition) %>% summarise(mean_height=mean(Plant_heigh
 
 # Traditional Inference
 
-There are two common inferrential procedures, **hypothesis testing** and **confidence intervals** for estimates. We will look at some examples and then explain in a general sense what is the meaning of these terms.  Our preference here is to use simulation and resampling rather than formal analytic constructs to understand tests of hypothesis and confidence intervals. 
+There are two common inferrential procedures, **hypothesis testing** and **confidence intervals** for estimates. We will look at some examples and then explain in a general sense what is the meaning of these terms.  Our preference here is to use **simulation** and **resampling** rather than formal analytic constructs to understand tests of hypothesis and confidence intervals. 
 
 
 ## One-sample Example
@@ -118,7 +118,7 @@ CI_result_t
 
 This information plus more can be obtained from the t.test function in R of which we will have more to say in the future. 
 ```{r}
-confint(t.test(x_vals,mu=p_mu,conf.level = 0.95))
+confint(t.test(x_vals,mu=p_mu,conf.level = ci_percent))
 ```
 For now do not worry about the details of the functions t.test or confint, we just want to use the result for comparison with the bootstrap and permutation test procedures discussed later. One thing to note is that the t.test is based on formulas derived using asymptotic analysis of analytical distribution functions. 
 
@@ -210,7 +210,7 @@ library(boot)
 ```{r}
 my_mean_w <- function(x,w) sum(x*w)
 
-boot_CI <- boot.ci(boot(data=x_vals, statistic=my_mean_w, R=5000,stype = "w"), conf = 0.95,type="basic")
+boot_CI <- boot.ci(boot(data=x_vals, statistic=my_mean_w, R=5000,stype = "w"), conf = ci_percent,type="basic")
 
 boot_CI
 ```
@@ -334,7 +334,7 @@ This gives an approximation to the one-sided p-value.
 
 The traditional method for testing this is with a one-sampel t-test:
 ```{r}
-t.test(x_vals,mu=p_mu,conf.level = 0.95)
+t.test(x_vals,mu=p_mu,conf.level = ci_percent)
 ```
 
 We would fail to reject the null hypothesis. 
@@ -356,3 +356,5 @@ test_x <- x_vals - p_mu
 2*(pbinom(num_plus,n,p=0.5))
 ```
 Again, we fail to reject the null hypothesis. 
+
+**Note:** Between permutation tests and bootstrap t-tests, permutation tests are preferred when it is possible to do them. 
