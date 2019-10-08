@@ -17,11 +17,11 @@ We have also seen example data sets where a model based on the data may help us 
 
 There are several common key steps in the modeling process that we will cover in this course:
 
-1) Model training which is also called model fitting or parameter estimation. This typically involves implementing some kind of training algorithm. 
-2) Model validation. At this stage we assess the accuracy of the model and determine how useful is the model in making predictions on previously unseen data, that is data that is not used in training the model. 
-3) Model selection, feature selection, and hyperparameter tuning. Here the concern is to determine among a set of competing model choices, or a set of competing variables which should be used for the application we are interested in. 
+1) **Model training** which is also called model fitting or parameter estimation. This typically involves implementing some kind of training algorithm. 
+2) **Model validation.** At this stage we assess the accuracy of the model and determine how useful is the model in making predictions on previously unseen data, that is data that is not used in training the model. 
+3) **Model selection,** feature selection, and hyperparameter tuning. Here the concern is to determine among a set of competing model choices, or a set of competing variables which should be used for the application we are interested in. 
 
-**Note:** There are often also preprocessing steps involved in the modeling process. This is includes transforming the data, *e.g.* centering or scaling some variables, dimension reduction, etc. We will come back to these topics usually in specific contexts. 
+**Note:** There are often also preprocessing steps involved in the modeling process. This is includes transforming the data, *e.g.* centering or scaling some variables, dimension reduction, etc. We will come back to these topics later, usually in specific contexts. 
 
 # Introduction to Supervised Learning
 
@@ -44,7 +44,9 @@ linear_df %>% ggplot(aes(x=x,y=y)) + geom_point()
 
 We might suppose that 
 
-$Y = mX + b + \epsilon$
+$Y = mX + b + \epsilon,$
+
+that is, we assume that there is a **linear** relationship between the response and predictor.  
 
 As another example, consider the data represented in the left side of the following figure:
 ![ ](../Figures/2.2.png)
@@ -53,7 +55,7 @@ We might suppose that
 
 $Y = f(X) + \epsilon,$
 
-where $f$ is some polynomial function. 
+where $f$ is some **polynomial** function. 
 
 **Note:** In both of the previous examples, the response variable was continuous. It may be the case, as with the iris data set that the response variable is categorical. 
 
@@ -62,18 +64,20 @@ where $f$ is some polynomial function.
 
 In supervised learning, the task is, given an assumed model $Y = f(X) + \epsilon$ to **approximate** $f$ with a function $\hat{f}$ such that 
 
-$\hat{Y} = \hat{f}(X)$ 
+$\hat{Y} = \hat{f}(X),$ 
 
-represents a prediction $\hat{Y}$ for $Y$. 
+represents a **prediction** $\hat{Y}$ corresponding to $X$ for $Y$. 
 
 **Note:** The difference $Y - \hat{Y}$ is often called the *error* or *residual*.  
 
-In the context of the two examples,
+Let's illustrate this in the context of the two examples:
+
+For the first example we might have $\hat{f}$ be the linear function whose graph (the line) is shown below, 
 ```{r}
 linear_df %>% ggplot(aes(x=x,y=y)) + geom_point() + 
   geom_smooth(method = "lm",se=FALSE)
 ```
-The $y$-values along the line make up the predictions corresponding to the $y$-values in the data points. 
+and the $y$-values along the line make up the predictions $\hat{y}$ corresponding to the $y$-values in the data points. 
 
 We can plot the errors or residuals with
 ```{r}
@@ -82,17 +86,17 @@ linear_df %>% ggplot(aes(x=x,y=y)) + geom_point() +
   geom_smooth(method = "lm",se=FALSE) + 
   geom_segment(aes(xend = x, yend = y_hats))
 ```
+Later we will see that the overall sum of each of the residuals squared provides a measure of how well the model performs in terms of predicting the observed data. 
 
-In the right of the following figure:
+
+For the second example, tn the right of the following figure,
 ![ ](../Figures/2.2.png)
 
-
-
-The $y$-values along the curve  make up the predictions corresponding to the $y$-values in the data points. The corresponding residuals are also shown. 
+the $y$-values along the curve  make up the predictions $\hat{y}$ corresponding to the $y$-values in the data points. The corresponding residuals are also shown. 
 
 There three questions:
 
-1) What estimate $f$?
+1) Why estimate $f$?
 2) How is the estimate $\hat{f}$ constructed? 
 3) How accurate are the predictions made using the estimate $\hat{f}$?
 
@@ -108,4 +112,6 @@ There are two main reasons for estimating $f$:
 
 A key distinction between prediction and inference is that with prediction, the specific form of $\hat{f}$ is not important, only the degree of accuracy of resulting predictions. On the other hand, the specific form of $\hat{f}$ does matter in problems of inference. 
 
-While the main focus of this course is on problems of prediction, we will now pause to briefly review some concepts from basic statistics and (re-)examine inference in that context.  
+While the main focus of this course is on problems of prediction, we will now pause to briefly review some concepts from basic statistics and (re-)examine inference in that context. 
+
+After our study of statistical inference, we will come back to model fitting (training) and evaluation and then discuss some ideas from unsupervised learning. All of this will be covered in further notebooks. 
