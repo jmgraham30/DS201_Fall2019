@@ -1,0 +1,67 @@
+---
+title: "Introduction to Model Fitting"
+output: html_notebook
+---
+
+```{r,warning=FALSE,message=FALSE}
+library(tidyverse)
+library(broom)
+library(caret)
+```
+
+# Introduction 
+
+For supervised learning models, either regression or classification, the basic idea behind model fitting is very simple: select the model $\hat{f}$ (either by choosing parameter values in the parametric case or some quality of the model like smoothness in the non-parametric case) whose structure is such that the error between the known response values in the data and the response values predicted by the model is minimized. In the regression setting (continuous response variable) error is measured by **mean squared error**
+
+$\text{MSE} = \frac{1}{n}\sum_{i=1}^{n}(y_{i} - \hat{f}(x_{i}))^2,$
+
+and in the classification setting error is measured by the **classification error rate**
+
+$\text{CER}=\frac{1}{n}\sum_{i=1}^{n}I(y_{i}\neq\hat{f}(x_{i})),$
+
+(intuitively this is the proportion of response values in the data that are misclassified by the model). 
+
+Why is this not the end of the story when it comes to model fitting? There are three primary considerations that force us to think beyond straightforward error minimization when it comes to model fitting:
+
+1) There is a trade-off between the flexibility of a modeling approach and how easy it is to interpret the meaning of the model. 
+
+![ ](../Figures/figure2_7.png)
+
+This is more of a pragmatic problem than a foundational problem. In the physical sciences it is usually essential than a model have an interpretation directly related to On the other hand, in business applications one may not be too concerend with what the model is telling you on some base level but only that the model provide a reasonable solution the problem of interest.    
+
+
+
+2) There is the problem of **overfitting**, that is, a commonly occurring phenomena where models that do an exceptional job of predicting the correct responses on the **training data** may perform poorly with inaccurate predictions on previously unseen **test data**. 
+
+![ ](../Figures/2.9.png)
+
+
+3) There is a well-known trade-off between **bias** and **variance**. This is called the **bias-variance trade-off**. In this context bias refers to the consequences (in terms of error) of using a potentially simple $\hat{f}$ to approximate a potentially complex process (in some ways this is related to model flexibility), while variance characterizes the change that we would observe if $\hat{f}$ was estimated using different (but similar) data. As an example, a linear model would possesses relatively high bias but relatively low variance compared with a highly non-linear model. 
+
+Techniques such as **cross-validation** and the **bootstrap** can be used to assess the performance of a model and determine if there is too much overfitting or variance. For example, cross-validation can be used to estimate the **test error** associated with a given model method, or to select the appropriate level of flexibility, while the bootstrap can be used to provide a measure of accuracy of a given model. 
+
+**Important point:** In a perfect world we would have a highly accurate model that is easy to interpret, does a good job in generalizing to new data (*i.e.* doesn't overfit), has low bias, and has low variance. The point is that this is impossible because a model that does well in one of the areas of accuracy, interpretability, generalizability, low bias, or low variance automatically does less well in one or more of the other areas. 
+
+In practice it has become straightforward to fit or train a particular type of model because R, Python, and other programming environments provide easy to use implementations of many common training algorithms. For example, in R there is a simple function lm() for training a linear model. Furthermore, the R package [caret](http://topepo.github.io/caret/index.html) and the Python package [scikit-learn](https://scikit-learn.org/stable/) make it relatively easy to conduct cross-validation and model performance assessment. This article provides [a short introduction to caret](https://cran.r-project.org/web/packages/caret/vignettes/caret.html) while [this page](https://www.analyticsvidhya.com/blog/2016/12/cheatsheet-scikit-learn-caret-package-for-python-r-respectively/) provides cheatsheets for caret and sci-kit learn. 
+
+Later we will see many examples of model training and evaluation in R and explore some aspects of the caret package in relation to carrying out these tasks. For now, we will develop a deeper understanding of the fundamental concepts of model training and evaluation using some specific modeling approaches beginning with simple linear regression. 
+
+# Introduction to Linear Regression 
+
+Chapter 3 of [An Introduction to Statistical Learning with Applications in R](http://faculty.marshall.usc.edu/gareth-james/ISL/ISLR%20Seventh%20Printing.pdf) is a highly useful reference for the material we will discuss here. 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
