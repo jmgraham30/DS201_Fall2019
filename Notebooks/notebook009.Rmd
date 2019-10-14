@@ -78,8 +78,8 @@ $\text{RSS} = \sum_{i=1}^{n}(y_{i} - \hat{y}_{i})^2.$
 Here is our residual sum of squares function:
 ```{r}
 return_rss <- function(coeffs,data=linear_df){
-  m <- coeffs[1]
-  b <- coeffs[2]
+  m <- coeffs[2]
+  b <- coeffs[1]
   y_hat <- m*linear_df$x + b
   rss <- sum((linear_df$y - y_hat)^2)
 }
@@ -97,16 +97,92 @@ optim(c(1,1),return_rss)$par
 
 ## The lm() Function 
 
+There is a built-in function in R called lm() that does all of the work of fitting a linear model for us. Furthermore, lm() returns a lot of useful information regarding the fit and there are functions such as coefficients() that provide easy access to this information. The R package broom contains three functions that tidy the outout from lm and provide additional information:
+
+1) tidy() tidies the lm fit output
+2) glance() return a tibble with summary statistics for a linear fit
+3) augment() adds linear fit information such as residuals to the data the model is fit to
+
+### Example
+
+Use lm() to obtain a linear fit
 ```{r}
-coefficients(lm(y~x,data=linear_df))
+lm_fit <- lm(y~x,data=linear_df)
 ```
 
+Obtain the estimated coefficient values:
+```{r}
+coefficients(lm_fit)
+```
 
+**Question:** How does this result compare with what we obtained before when we "manually" optimized the RSS function? 
 
+Let's call the three broom functions on our linear fit:
+```{r}
+tidy(lm_fit)
+```
 
+Notice that in addition to the estimated values for $\hat{m}$ and $\hat{b}$ we also get standard errors, sample statistic values, and p-values. We will return later to a discussion of the meaning and use of the standard errors, sample statistic values, and p-values. We note that these are mostly play a role in inference and are not as important in prediction. 
 
+Now for glance:
+```{r}
+glance(lm_fit)
+```
 
+This returns additional statistics, these tell us about the goodness of fit for our linear model. We note here that the [AIC](https://en.wikipedia.org/wiki/Akaike_information_criterion) and [BIC](https://en.wikipedia.org/wiki/Bayesian_information_criterion) values are useful metrics related to model selection and avoiding overfitting. Again, these are topics we will return to later. 
 
+Finally, let's call augment:
+```{r}
+lm_fit_aug <- augment(lm_fit)
+head(lm_fit_aug)
+```
 
+There is a lot of information here. For now, take these points in mind:
+
+1) This is a tibble
+2) It contains the original data
+3) It contains the values for $\hat{y}$ (.fitted)
+4) It contains the residuals $y-\hat{y}$ (.resid)
+
+It is easy to obtain the RSS from the tibble return by augment, for example,
+```{r}
+sum((lm_fit_aug$.resid)^2)
+```
+and compare this with
+```{r}
+(return_rss(coefficients(lm_fit)))
+```
+
+The tibble produced by a call to augment is very useful for producing plots:
+```{r}
+lm_fit_aug %>% ggplot() + 
+  geom_point(aes(x=x,y=y)) + 
+  geom_line(aes(x=x,y=.fitted),color="blue")
+```
+
+A very commonly used diagnostic plot for linear regression is to plot residuals versus fitted values:
+```{r}
+lm_fit_aug %>% ggplot(aes(x=.fitted,y=.resid)) + 
+  geom_point() + 
+  geom_hline(yintercept = 0)
+```
+
+We will talk more about the significance of this plot later but for now just know that we are looking for the residuals to be symmetrically distributed in the vertical direction with constant variance. 
+
+Finally, note that we can plot a linear fit along with the corresponding confidence intervals with
+```{r}
+linear_df %>% ggplot(aes(x=x,y=y)) + geom_point() + 
+  geom_smooth(method="lm")
+```
+
+It is possible to reproduce this using the output from augment as follows:
+```{r}
+lm_fit_aug %>% ggplot(aes(x=x,y=y)) + 
+  geom_line(aes(x=x,y=.fitted-2*.se.fit)) + 
+  geom_line(aes(x=x,y=.fitted+2*.se.fit)) + 
+  geom_ribbon(aes(ymin = .fitted-2*.se.fit, ymax = .fitted+2*.se.fit), fill = "grey70") + 
+  geom_point(aes(x=x,y=y)) + 
+  geom_line(aes(x=x,y=.fitted),color="blue")
+```
 
 
