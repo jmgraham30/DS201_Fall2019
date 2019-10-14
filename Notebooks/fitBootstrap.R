@@ -17,8 +17,10 @@ df %>% ggplot(aes(x=x,y=y)) +
 
 N <- 5000
 
-get_lm_bootstrap <- function(df,id){
-  predict(loess(y[id]~x,data=df))
+get_lm_bootstrap <- function(data_df,id){
+  resamp_df <- data_df[id, ]
+  re_fit <- loess(y~x,data=resamp_df)
+  predict(re_fit,data_df)
 }
 
 boot_result <- boot(data=df,statistic = get_lm_bootstrap,R=N,stype="i")
@@ -35,7 +37,6 @@ df %>% ggplot(aes(x=x,y=y)) +
   geom_point() + 
   geom_smooth(method=fit_method) + 
   geom_errorbar(aes(x=x,ymin=lower,ymax=upper),color="red")
-
 
 kidney_df <- read.table("https://web.stanford.edu/~hastie/CASI_files/DATA/kidney.txt",header = T)
 

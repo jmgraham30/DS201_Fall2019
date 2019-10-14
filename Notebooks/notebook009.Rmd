@@ -7,6 +7,7 @@ output: html_notebook
 library(tidyverse)
 library(broom)
 library(caret)
+library(boot)
 ```
 
 # Introduction 
@@ -186,3 +187,29 @@ lm_fit_aug %>% ggplot(aes(x=x,y=y)) +
 ```
 
 
+
+### Bootstrap Standard Error
+
+It is worth noting that we can use the bootstrap to approxmate the standard error values return as the column .se.fit in the call to augment(). 
+
+```{r}
+N <- 5000
+
+boot_fit <- function(data,id){
+  resamp_df <- data[id, ]
+  re_fit <- lm(y~x,data=resamp_df)
+  predict(re_fit,data)
+}
+
+boot_result <- boot(linear_df,boot_fit,R=N)
+
+```
+
+```{r}
+boot_se <- apply(boot_result$t, MARGIN=2, FUN = sd)
+```
+
+
+```{r}
+lm_fit_aug %>% mutate(boot_se=boot_se) %>% select(.se.fit,boot_se) %>% head()
+```
