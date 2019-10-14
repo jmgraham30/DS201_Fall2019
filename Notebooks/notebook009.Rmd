@@ -50,11 +50,56 @@ Later we will see many examples of model training and evaluation in R and explor
 
 Chapter 3 of [An Introduction to Statistical Learning with Applications in R](http://faculty.marshall.usc.edu/gareth-james/ISL/ISLR%20Seventh%20Printing.pdf) is a highly useful reference for the material we will discuss here. 
 
+## Simple Linear Regression
 
+In simple linear regression we have two variables, one quantitative predictor variable $x$ and one quantitative response variable $y$. Then we assume that
 
+$y = mx + b + \epsilon,$
 
+and we seek to find parameter (or coefficient) values $\hat{m}$ and $\hat{b}$ such that
 
+$\hat{y} = \hat{m}x + \hat{b},$
 
+provides a "good" estimate for $y$. The values $\hat{m}$ and $\hat{b}$ are determined by the method of least squares. Let's look at an example. 
+
+### Simulated Linear Data
+
+Consider the following data:
+```{r}
+linear_df <- data.frame(x=rnorm(45,mean=2,sd=3.5))
+linear_df <- linear_df %>% mutate(y=2*x+3+rnorm(45,sd=2))
+linear_df %>% ggplot(aes(x=x,y=y)) + geom_point()
+```
+
+We will write a function that inputs values for the  coefficients $m$ and $b$ and resturns the *residual sum of squares*
+
+$\text{RSS} = \sum_{i=1}^{n}(y_{i} - \hat{y}_{i})^2.$
+
+Here is our residual sum of squares function:
+```{r}
+return_rss <- function(coeffs,data=linear_df){
+  m <- coeffs[1]
+  b <- coeffs[2]
+  y_hat <- m*linear_df$x + b
+  rss <- sum((linear_df$y - y_hat)^2)
+}
+```
+
+Let's compute some different residual sum of square values:
+```{r}
+(return_rss(c(1,1)))
+```
+
+In order to determine $\hat{m}$ and $\hat{b}$, we will minimize the residual sum of squares function with respect to the coefficient values $m$ and $b$. In R this can be done with the optim() function:
+```{r}
+optim(c(1,1),return_rss)$par
+```
+
+## The lm() Function 
+
+```{r}
+coefficients(lm(y~x,data=linear_df))
+```
 
 
 
