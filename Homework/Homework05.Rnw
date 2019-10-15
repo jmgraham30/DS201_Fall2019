@@ -1,0 +1,97 @@
+\documentclass[12pt]{article}
+\textwidth=7in
+\textheight=9.5in
+\topmargin=-1in
+\headheight=0in
+\headsep=.5in
+\hoffset  -.85in
+
+\pagestyle{empty}
+
+\usepackage{amsmath,amssymb,amsfonts}
+\usepackage{url}
+
+\renewcommand{\thefootnote}{\fnsymbol{footnote}}
+\begin{document}
+
+\begin{center}
+{\bf Intro to Data Science \\ Homework 4: Due Wednesday October 23 at 2:00pm}
+\end{center}
+
+\setlength{\unitlength}{1in}
+
+\begin{picture}(6,.1)
+\put(0,0) {\line(1,0){6.5}}
+\end{picture}
+
+\renewcommand{\arraystretch}{2}
+
+\vskip.25in
+
+\noindent{\bf  {\Large Exercises:} }
+
+<<echo=FALSE>>=
+suppressMessages(library(tidyverse))
+suppressMessages(library(gtools))
+suppressMessages(library(knitr))
+suppressMessages(library(boot))
+suppressMessages(library(resampledata))
+@
+
+\vskip.25in
+
+Many of the exercises for this assignment ask you to use the resampling methods (bootstrap and permutation tests) introduced in class in the R notebook basicStatsNotebook.   
+
+  \begin{enumerate}
+    \item This problem concerns permutation testing. Suppose you conduct an experiment and inject a drug into three mice. Their times for running a mze are 8, 10, and 15 seconds; the times for two control mice are 5 and 9 seconds. 
+    \begin{enumerate}
+      \item Compute the difference in mean times between the treatment group and the control group. 
+      \item The following command will produce all possible permutations (note that there are $5!=$\Sexpr{factorial(5)}) of the values 8, 10, 15, 5, and 9:
+      <<results="hide">>=
+perm_res <- permutations(5,5,c(8,10,15,5,9))
+@
+   Note that you must load the library gtools for this to work. 
+   Use this to compute the difference in means between the first three and last two values in each of the possible permutations. Here is one way to do this:
+<<results="hide">>=
+perm_res <- as.data.frame(perm_res)
+perm_res <- perm_res %>% 
+  mutate(mean1=(V1+V2+V3)/3,mean2=(V4+V5)/2,mean_diff=mean1-mean2)
+@
+    Note that this adds three columns, the last of which is the difference in means:
+<<echo=FALSE>>=
+head(perm_res)
+@
+    
+    \item What proportion of the differences are as large or larger than the observed difference in mean times? 
+    \item Make a histogram (choose your binwidth wisely) of the difference in means and add a vertical line to the plot corresponding to the value for the observed difference in mean times  
+    \end{enumerate}
+    
+    \item In this exercise you will conduct a permutation test on the difference of mean delay times for the FlightDelays dataset found in the resampledata package (make sure you install and load this package).  The FlightDelays data contain flight delays for two airlines, American Airlines and United Airlines. 
+    \begin{enumerate}
+      \item Conduct a two-sided permutation test to see if the difference in mean delay times between the two carriers are statistically significant. Plot a histogram to illustrate your results. (Note: You do not need to consider all possibe permutations, just a large number of samples with replacement as we did in class.) 
+     \item The flights took place in May and June 2009. Conduct a two-sided permutation test to see if the difference in mean delay times between the two months is statistically significant. 
+    \end{enumerate}
+    
+    \item This exercise uses the Bangladesh dataset from the resampledata package. 
+    \begin{enumerate}
+      \item Conduct and EDA on the chlorine concentrations (recordedin the Chlorine variable) and describe the salient features. 
+      \item Bootstrap the mean chlorine concentration. 
+      \item Plot the bootstrap distribution for the mean. 
+      \item Find and interpret the 95\% bootstrap percentile confidence interval. 
+    \end{enumerate}
+    
+    \item What is normal body temperature? The standard has been 98.6 degrees Fahrenheit. Suppose a medical worker suspects that body temperatures in children in Sodor are higher than the norm. She obtains measurements from a random sample of 18 children and finds the following: \Sexpr{c(98.0,98.9,99.0,98.9,98.8,98.6,99.1,98.9,98.5,98.9,98.9,98.4,99.0,99.2,98.6,98.8,98.9,98.7)}. 
+    \begin{enumerate}
+      \item What are the hypotheses to test? 
+      \item Carry out the test, and state a conclusion in a complete sentence. 
+      \item Make relevant plots to display your results.  
+    \end{enumerate}
+    \item The data set Walleye in the resampledata package contains data from the Minnesota Pollution Agency recording the lengths in inches and weights in pounds for 60 walleye caught in the Minnesota lakes during the 1990's. There is some suspicion that on average, walleye are smaller now than in the past. Suppose historical records from the early 1900's indicate that the average weight of walleye caught by fishermen was 2.5lb. Assume the data are representative of caught walleye; do they indicate that walleye from the 1990's weight less?
+    \begin{enumerate}
+      \item Create a histogram of walleye weight and describe the distribution. 
+      \item Use the bootstrap t-test to carry out an appropriate hypothesis test. What do you conclude? 
+      \item Plot a histogram of the bootstrap t-distribution and indicate with a vertical line the observed t-statistic value. 
+    \end{enumerate}
+  \end{enumerate}
+    
+\end{document}

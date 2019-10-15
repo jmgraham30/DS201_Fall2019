@@ -1,0 +1,160 @@
+\documentclass[12pt]{article}\usepackage[]{graphicx}\usepackage[]{color}
+% maxwidth is the original width if it is less than linewidth
+% otherwise use linewidth (to make sure the graphics do not exceed the margin)
+\makeatletter
+\def\maxwidth{ %
+  \ifdim\Gin@nat@width>\linewidth
+    \linewidth
+  \else
+    \Gin@nat@width
+  \fi
+}
+\makeatother
+
+\definecolor{fgcolor}{rgb}{0.345, 0.345, 0.345}
+\newcommand{\hlnum}[1]{\textcolor[rgb]{0.686,0.059,0.569}{#1}}%
+\newcommand{\hlstr}[1]{\textcolor[rgb]{0.192,0.494,0.8}{#1}}%
+\newcommand{\hlcom}[1]{\textcolor[rgb]{0.678,0.584,0.686}{\textit{#1}}}%
+\newcommand{\hlopt}[1]{\textcolor[rgb]{0,0,0}{#1}}%
+\newcommand{\hlstd}[1]{\textcolor[rgb]{0.345,0.345,0.345}{#1}}%
+\newcommand{\hlkwa}[1]{\textcolor[rgb]{0.161,0.373,0.58}{\textbf{#1}}}%
+\newcommand{\hlkwb}[1]{\textcolor[rgb]{0.69,0.353,0.396}{#1}}%
+\newcommand{\hlkwc}[1]{\textcolor[rgb]{0.333,0.667,0.333}{#1}}%
+\newcommand{\hlkwd}[1]{\textcolor[rgb]{0.737,0.353,0.396}{\textbf{#1}}}%
+\let\hlipl\hlkwb
+
+\usepackage{framed}
+\makeatletter
+\newenvironment{kframe}{%
+ \def\at@end@of@kframe{}%
+ \ifinner\ifhmode%
+  \def\at@end@of@kframe{\end{minipage}}%
+  \begin{minipage}{\columnwidth}%
+ \fi\fi%
+ \def\FrameCommand##1{\hskip\@totalleftmargin \hskip-\fboxsep
+ \colorbox{shadecolor}{##1}\hskip-\fboxsep
+     % There is no \\@totalrightmargin, so:
+     \hskip-\linewidth \hskip-\@totalleftmargin \hskip\columnwidth}%
+ \MakeFramed {\advance\hsize-\width
+   \@totalleftmargin\z@ \linewidth\hsize
+   \@setminipage}}%
+ {\par\unskip\endMakeFramed%
+ \at@end@of@kframe}
+\makeatother
+
+\definecolor{shadecolor}{rgb}{.97, .97, .97}
+\definecolor{messagecolor}{rgb}{0, 0, 0}
+\definecolor{warningcolor}{rgb}{1, 0, 1}
+\definecolor{errorcolor}{rgb}{1, 0, 0}
+\newenvironment{knitrout}{}{} % an empty environment to be redefined in TeX
+
+\usepackage{alltt}
+\textwidth=7in
+\textheight=9.5in
+\topmargin=-1in
+\headheight=0in
+\headsep=.5in
+\hoffset  -.85in
+
+\pagestyle{empty}
+
+\usepackage{amsmath,amssymb,amsfonts}
+\usepackage{url}
+
+\renewcommand{\thefootnote}{\fnsymbol{footnote}}
+\IfFileExists{upquote.sty}{\usepackage{upquote}}{}
+\begin{document}
+
+\begin{center}
+{\bf Intro to Data Science \\ Homework 4: Due Wednesday October 23 at 2:00pm}
+\end{center}
+
+\setlength{\unitlength}{1in}
+
+\begin{picture}(6,.1)
+\put(0,0) {\line(1,0){6.5}}
+\end{picture}
+
+\renewcommand{\arraystretch}{2}
+
+\vskip.25in
+
+\noindent{\bf  {\Large Exercises:} }
+
+
+
+\vskip.25in
+
+Many of the exercises for this assignment ask you to use the resampling methods (bootstrap and permutation tests) introduced in class in the R notebook basicStatsNotebook.   
+
+  \begin{enumerate}
+    \item This problem concerns permutation testing. Suppose you conduct an experiment and inject a drug into three mice. Their times for running a mze are 8, 10, and 15 seconds; the times for two control mice are 5 and 9 seconds. 
+    \begin{enumerate}
+      \item Compute the difference in mean times between the treatment group and the control group. 
+      \item The following command will produce all possible permutations (note that there are $5!=$120) of the values 8, 10, 15, 5, and 9:
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlstd{perm_res} \hlkwb{<-} \hlkwd{permutations}\hlstd{(}\hlnum{5}\hlstd{,}\hlnum{5}\hlstd{,}\hlkwd{c}\hlstd{(}\hlnum{8}\hlstd{,}\hlnum{10}\hlstd{,}\hlnum{15}\hlstd{,}\hlnum{5}\hlstd{,}\hlnum{9}\hlstd{))}
+\end{alltt}
+\end{kframe}
+\end{knitrout}
+   Note that you must load the library gtools for this to work. 
+   Use this to compute the difference in means between the first three and last two values in each of the possible permutations. Here is one way to do this:
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlstd{perm_res} \hlkwb{<-} \hlkwd{as.data.frame}\hlstd{(perm_res)}
+\hlstd{perm_res} \hlkwb{<-} \hlstd{perm_res} \hlopt{%>%}
+  \hlkwd{mutate}\hlstd{(}\hlkwc{mean1}\hlstd{=(V1}\hlopt{+}\hlstd{V2}\hlopt{+}\hlstd{V3)}\hlopt{/}\hlnum{3}\hlstd{,}\hlkwc{mean2}\hlstd{=(V4}\hlopt{+}\hlstd{V5)}\hlopt{/}\hlnum{2}\hlstd{,}\hlkwc{mean_diff}\hlstd{=mean1}\hlopt{-}\hlstd{mean2)}
+\end{alltt}
+\end{kframe}
+\end{knitrout}
+    Note that this adds three columns, the last of which is the difference in means:
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
+\begin{verbatim}
+##   V1 V2 V3 V4 V5    mean1 mean2  mean_diff
+## 1  5  8  9 10 15 7.333333  12.5 -5.1666667
+## 2  5  8  9 15 10 7.333333  12.5 -5.1666667
+## 3  5  8 10  9 15 7.666667  12.0 -4.3333333
+## 4  5  8 10 15  9 7.666667  12.0 -4.3333333
+## 5  5  8 15  9 10 9.333333   9.5 -0.1666667
+## 6  5  8 15 10  9 9.333333   9.5 -0.1666667
+\end{verbatim}
+\end{kframe}
+\end{knitrout}
+    
+    \item What proportion of the differences are as large or larger than the observed difference in mean times? 
+    \item Make a histogram (choose your binwidth wisely) of the difference in means and add a vertical line to the plot corresponding to the value for the observed difference in mean times  
+    \end{enumerate}
+    
+    \item In this exercise you will conduct a permutation test on the difference of mean delay times for the FlightDelays dataset found in the resampledata package (make sure you install and load this package).  The FlightDelays data contain flight delays for two airlines, American Airlines and United Airlines. 
+    \begin{enumerate}
+      \item Conduct a two-sided permutation test to see if the difference in mean delay times between the two carriers are statistically significant. Plot a histogram to illustrate your results. (Note: You do not need to consider all possibe permutations, just a large number of samples with replacement as we did in class.) 
+     \item The flights took place in May and June 2009. Conduct a two-sided permutation test to see if the difference in mean delay times between the two months is statistically significant. 
+    \end{enumerate}
+    
+    \item This exercise uses the Bangladesh dataset from the resampledata package. 
+    \begin{enumerate}
+      \item Conduct and EDA on the chlorine concentrations (recordedin the Chlorine variable) and describe the salient features. 
+      \item Bootstrap the mean chlorine concentration. 
+      \item Plot the bootstrap distribution for the mean. 
+      \item Find and interpret the 95\% bootstrap percentile confidence interval. 
+    \end{enumerate}
+    
+    \item What is normal body temperature? The standard has been 98.6 degrees Fahrenheit. Suppose a medical worker suspects that body temperatures in children in Sodor are higher than the norm. She obtains measurements from a random sample of 18 children and finds the following: 98, 98.9, 99, 98.9, 98.8, 98.6, 99.1, 98.9, 98.5, 98.9, 98.9, 98.4, 99, 99.2, 98.6, 98.8, 98.9, 98.7. 
+    \begin{enumerate}
+      \item What are the hypotheses to test? 
+      \item Carry out the test, and state a conclusion in a complete sentence. 
+      \item Make relevant plots to display your results.  
+    \end{enumerate}
+    \item The data set Walleye in the resampledata package contains data from the Minnesota Pollution Agency recording the lengths in inches and weights in pounds for 60 walleye caught in the Minnesota lakes during the 1990's. There is some suspicion that on average, walleye are smaller now than in the past. Suppose historical records from the early 1900's indicate that the average weight of walleye caught by fishermen was 2.5lb. Assume the data are representative of caught walleye; do they indicate that walleye from the 1990's weight less?
+    \begin{enumerate}
+      \item Create a histogram of walleye weight and describe the distribution. 
+      \item Use the bootstrap t-test to carry out an appropriate hypothesis test. What do you conclude? 
+      \item Plot a histogram of the bootstrap t-distribution and indicate with a vertical line the observed t-statistic value. 
+    \end{enumerate}
+  \end{enumerate}
+    
+\end{document}
