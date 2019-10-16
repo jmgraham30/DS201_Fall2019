@@ -149,9 +149,9 @@ Again, do not worry about the details of confint and t.test, we just want to use
 
 Mathematical statistics derives analytic formulas that can be used to compute values of interest in statistical inference. This is often done by making specific assumptions or using asymptotic results to derive or approximate the sampling distributions of the most common sample statistics. For example, this approach leads to the t-test that we hinted at before. 
 
-Instead, we will take a computational approach that uses simulation and resampling procedures to approximate t**he sampling distribution of a statistic of interest. There are two common resampling methods:
+Instead, we will take a computational approach that uses simulation and resampling procedures to approximate the sampling distribution of a statistic of interest. There are two common resampling methods:
 
-1) Bootstrap methods which use **sampling with replacement** and is typically used to approximate confidence intervals although bootstrap methods can be used for hypothesis testing
+1) Bootstrap methods which use **sampling with replacement** and are typically used to approximate confidence intervals although bootstrap methods can be used for hypothesis testing
 2) Permutation tests which use **sampling without replacement** and are used for testing statistical hypotheses and approximating p-values 
 
 Resampling methods are well-suited for applications in data science since
@@ -240,7 +240,7 @@ confint(t.test(x,y))
 
 Before we explain the idea of permutation tests, let's recall the general idea of hypothesis testing (aka significance testing). 
 
-The **null hypothesis**, denoted $H_{0}$, is a statement that corresponds to  no real effect. This is the status quo, in the absence of the data providing convincing evidence to the contrary. The **alternative hypothesis**, denoted $H_{A}$, is a statement that there is a real effect. The data may provide convincing evidence that this hypothesis is true. 
+The **null hypothesis**, denoted $H_{0}$, is a statement that corresponds to  **no real effect**. This is the status quo, in the absence of the data providing convincing evidence to the contrary. The **alternative hypothesis**, denoted $H_{A}$, is a statement that there is a real effect. The data may provide convincing evidence that this hypothesis is true. 
 
 In statistical hypothesis testing we seek to determine if the data provides strong enough evidence to **reject** the null hypothesis. Thus there are only two options: Reject the null or fail to reject the null. 
 
