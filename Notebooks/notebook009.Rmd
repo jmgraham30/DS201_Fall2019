@@ -277,3 +277,97 @@ lm_fit_aug %>% ggplot(aes(x=x,y=y)) +
 ```
 Our bootstrap standard errors do pretty well. 
 
+## Inference for Regression
+
+The most common inferential problem for simple linear regression is that of confidence intervals and significance tests for the slope parameter $m$. Here we will apply the bootstrap and permutation test to do this for our example data. 
+
+### Bootstrap standard error for $m$
+
+```{r}
+N <- 5000
+
+get_coefficients <- function(data,id){
+  resamp_df <- data[id, ]
+  re_fit <- lm(y~x,data=resamp_df)
+  coefficients(re_fit)
+}
+
+boot_coeffs_result <- boot(linear_df,get_coefficients,R=N)
+```
+
+Plot the bootstrap distribution for $m$:
+```{r}
+boot_coeffs_df <- as.data.frame(boot_coeffs_result$t)
+names(boot_coeffs_df) <- c("b","m")
+boot_coeffs_df %>% ggplot(aes(x=m)) + geom_histogram() +
+  geom_vline(xintercept = boot_coeffs_result$t0['x'])
+```
+
+The 95\% bootstrap precentile confidence interval then is
+```{r}
+quantile(boot_coeffs_df$m,c(0.025,0.975))
+```
+
+Compare this with the result from the following:
+```{r}
+tidy(lm(y~x,linear_df))
+```
+
+```{r}
+2.03144 + 2*c(-1,1)*0.07310169
+```
+
+### Permuatation test for $m$
+
+Here we will use a permutation test to test the null hypothesis
+
+$H_{0}$ - there is no relationship between $x$ and $y$, that is $m = 0$. 
+
+versus the alternative hypothesis
+
+$H_{A}$ - there is a relationship between $x$ and $y$, that is $m \neq 0$. 
+
+
+```{r}
+N <- 5000
+lm_fit_initial <- lm(y~x,linear_df)
+sample_slope <- lm_fit_initial$coefficients[2]
+slope_perm <- numeric(N)
+for (i in 1:N){
+  slope_perm[i] <- lm(y~sample(x),linear_df)$coefficients[2]
+}
+```
+
+Plot the result
+```{r}
+ggplot(data=NULL,mapping=aes(x=slope_perm)) + geom_histogram() + 
+  geom_vline(xintercept = sample_slope)
+```
+
+Compute the approximate p-value (by finding the propotion of values greater than or equal to the sample slope value)
+```{r}
+sum(slope_perm >= sample_slope)/N
+```
+
+Compare this with 
+```{r}
+summary(lm_fit_initial)
+```
+
+In either case we conclude that the data provides sufficient evidence to reject the null hypothesis. 
+
+**Note:** It is also possible to conduct a bootstrap t-test on the slope since the t-statistic
+
+$t = \frac{\hat{m} - 0}{\text{standard error}(\hat{m})}$
+
+can be used in a bootstrap. 
+
+There are several further topics that we want to pursue in relation to linear regression, these are:
+
+1) The topic of nonlinearity
+2) Overfitting an cross-validation to estimate test error
+3) Multiple linear regression 
+
+These topics will be addressed in the next notebook. 
+
+
