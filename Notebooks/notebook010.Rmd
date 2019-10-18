@@ -1,0 +1,122 @@
+---
+title: "Multiple Linear Regression and Further Regression Topics"
+output: html_notebook
+---
+
+```{r,warning=FALSE,message=FALSE}
+library(tidyverse)
+library(faraway)
+library(broom)
+library(caret)
+library(boot)
+library(ISLR)
+```
+
+
+# Introduction 
+
+Previously we examined simple linear regression, the situation in which we have two variables, one quantitative predictor variable $x$ and one quantitative response variable $y$. Then we assume that
+
+$y = mx + b + \epsilon,$
+
+and we seek to find parameter (or coefficient) values $\hat{m}$ and $\hat{b}$ such that
+
+$\hat{y} = \hat{m}x + \hat{b},$
+
+provides a "good" estimate for $y$.
+
+In this notebook we extend this to the situation where there are multiple quantitative predictor variables $x_{1},x_{2},\ldots , x_{p}$ and one quantitative response variable $y$. Then we assume that
+
+$y = m_{1}x_{1} + m_{2}x_{2} + \cdots + m_{p}x_{p} + b + \epsilon,$
+
+and we seek to find parameter (or coefficient) values $\hat{m_{1}}, \hat{m_{2}}, \ldots , \hat{m_{p}}$ and $\hat{b}$ such that
+
+$\hat{y} = \hat{m_{1}}x_{1} + \hat{m_{2}}x_{2} + \cdots + \hat{m_{p}}x_{p} + \hat{b},$
+
+provides a "good" estimate for $y$.
+
+**Note:** The estimated parameter values $\hat{m_{1}}, \hat{m_{2}}, \ldots , \hat{m_{p}}$ and $\hat{b}$ are determined by least squares in a manner similar to what we have already seen for simple linear regression. As such, we skip the details on estimation and go right to using R for multiple regression and look at applications.
+
+# Multiple Regression in R
+
+The lm() function works just as well for multiple regression. Let's look at an example. Consider the Boston housing data from the ISLR package:
+```{r}
+?MASS::Boston
+Boston_df <- MASS::Boston
+```
+
+```{r}
+head(Boston_df)
+```
+
+```{r}
+summary(Boston_df)
+```
+
+Notice that each of these variables is quantitative although the chas variable is really a binary classification. We might be interested to try to predict the median value of a home (medv) based on the average number of rooms (rm), the  proportion of owner-occupied units built prior to 1940 (age), and the lower status of the population (lstat). To do this with a linear model (*i.e.* mulitple linear regression) in R we simple use:
+```{r}
+Boston_lm <- lm(medv ~ rm + age + lstat,data=Boston_df)
+```
+
+Let's look at the results:
+```{r}
+tidy(Boston_lm)
+```
+
+**Note:** The estimate column gives us the estimated values for the coefficients. Also contained in this output is teh standard error for each estimate along with the corresponding observed t-statistic value and p-value. Even if we are not interested in inference, this information may still be useful in deciding which if any of the variables rm, age, or lstat is actually contributing to the response outcome. We will return to this discuss this in greater detail later.   
+
+```{r}
+glance(Boston_lm)
+```
+
+**Note:** This resturns statistical information related to goodness of fit.  
+
+Any time we conduct a regression it is a good idea to plot the residuals versus the fitted values:
+```{r}
+augment(Boston_lm,data=Boston_df) %>% ggplot(aes(x=.fitted,y=.resid)) + geom_point()
+```
+
+
+**Question:** What do you observe about this plot? 
+
+```{r}
+augment(Boston_lm,data=Boston_df) %>% 
+  ggplot(aes(x=.fitted,y=.resid)) + 
+  geom_point() + 
+  geom_hline(yintercept = 0) + 
+  geom_smooth(se=FALSE)
+```
+
+
+**Observation:** This residual versus fitted plot suggests that the assumption of a linear relationship between medv and rm, age, lstat may be too restrictive. 
+
+
+R makes it easy to fit a response to all of the predictors in the data set:
+```{r}
+lm(medv~.,data=Boston_df) %>% tidy()
+```
+
+
+We can also "update" a fit to modify what features (variables) to include:
+```{r}
+Boston_lm2 <- update(Boston_lm,~.-age)
+```
+ 
+
+```{r}
+Boston_lm2 %>% tidy()
+```
+
+Let's examine the residual versus fitted plot:
+```{r}
+augment(Boston_lm2,data=Boston_df) %>%
+  ggplot(aes(x=.fitted,y=.resid)) + 
+  geom_point() + 
+  geom_hline(yintercept = 0) + 
+  geom_smooth(se=FALSE)
+```
+
+**Question:** There is not much of a difference between this and what we saw before, why? 
+
+
+

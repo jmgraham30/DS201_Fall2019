@@ -364,10 +364,13 @@ can be used in a bootstrap.
 
 There are several further topics that we want to pursue in relation to linear regression, these are:
 
-1) The topic of nonlinearity
-2) Overfitting an cross-validation to estimate test error
-3) Multiple linear regression 
 
-These topics will be addressed in the next notebook. 
+1) Multiple linear regression 
+2) Cross-validation to estimate test error
+3) The topic of nonlinearity
+4) Overfitting 
+5) Model and feature selection 
+
+These topics will be addressed in the next few notebooks. 
 
 
