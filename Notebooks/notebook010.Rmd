@@ -118,5 +118,56 @@ augment(Boston_lm2,data=Boston_df) %>%
 
 **Question:** There is not much of a difference between this and what we saw before, why? 
 
+# Multiple Regression Questions
+
+When we perform multiple linear regression, we are interested in answering one or more of the following questions:
+
+1) Is a least one of the predictors useful in predicting the response? 
+
+2) Do all the predictors help to explain the response, or is only a subset of the predictors useful? 
+
+3) How well does the model fit the data? 
+
+4) Given a set of predictor values, what response value should we predict, and how accurate is our prediction. 
+
+
+## Question 1)
+
+
+To answer question 1) Is a least one of the predictors useful in predicting the response? We can use a permutation test for the F-statistic to test the null hypothesis
+
+$H_{0}$: $m_{1} = m_{2}  = \cdots = m_{p} = 0$
+
+versus the alternatice hypothesis 
+
+$H_{A}$: At least one of the $m_{i}$ coefficients is non-zero. 
+
+Notice that we can obtain the F-statistic value from the output of lm() and do not need to use a formula for it:
+```{r}
+(observed_F <- summary(Boston_lm)$fstatistic[1])
+```
+
+Let's conduct our permutation test:
+```{r}
+N <- 5000
+perm_F <- numeric(N)
+for (i in 1:N){
+  temp_lm <- lm(sample(medv)~rm + age + lstat,data=Boston_df)
+  perm_F[i] <- summary(temp_lm)$fstatistic[1]
+}
+ggplot(data=NULL,mapping=aes(x=perm_F)) + 
+  geom_histogram() 
+```
+
+Notice that most of the resampled F-statistic values fall around 1 whereas the observed F-statistic value is almost 300. Just intuitively we can see that our p-value will be extremely small. This the null hypothesis should be rejected. 
+
+Observe that the output of the following command gives the p-value computed using analytic formulas:
+```{r}
+summary(Boston_lm)
+```
+The p-value for the F-statistic here is very small. 
+
+
+
 
 
