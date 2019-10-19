@@ -344,3 +344,58 @@ Boston_selection$predictors
 ```{r}
 names(Boston_df)
 ```
+
+
+
+**Note:** We note that variable selection can help to a certain extent in avoiding over-fitting but it is not the only point to consider regarding over-fitting because it still does not provide insight into the test MSE. Cross-validation (CV), we will discuss later, is another technique used to examine over-fitting related issues. CV is a ressampling method that provides a means to approximate test error. 
+
+## Question 3)
+
+How well does the model fit the data? 
+
+The two most common numerical measures for model fit are residual standard error (RSE), which is an estimate of the standard deviation of $\epsilon$; and $R^2$, which describes the proportion of variation that is explained by the model. 
+
+**Note:** Typical approaches to estimating the standard deviation of $\epsilon$ assume that this is a constant (independent of $x$). This assumption is known as **homoscedasticity**. Also, the RSE provides an absolute measure of *lack of fit*. A large RSE suggests a poor fit. $R^2$ is always between 0 and 1  and thus represents a proportion. An $R^2$ value close to 1 suggests that the model explains a large portion
+of the variance in the response variable. 
+
+The  output from the glance() function contains the values of RSE and $R^2$. For example, 
+
+```{r}
+glance(sim_lm_fit)
+```
+the frst column is $R^2$ and the column sigma is the RSE. Compare this with the output from 
+```{r}
+summary(sim_lm_fit)
+```
+
+**Note:** The residual versus fitted values plot is a good way to check for (the violation of) homoscedasticity. Consider the following simulated example:
+
+```{r}
+x <- rnorm(75,mean=2,sd=1.7)
+heterogeneous_sd <- function(x) sapply(x,function(x) rnorm(1,mean=0,sd=5*abs(x)))
+y <- 2*x + heterogeneous_sd(x)
+df <- data.frame(x=x,y=y)
+```
+
+```{r}
+df %>% ggplot(aes(x=x,y=y)) + geom_point() + 
+  geom_smooth(method = "lm")
+```
+
+```{r}
+lm_fit_heteroscedasticity <- lm(y~x,data=df)
+augment(lm_fit_heteroscedasticity,data=df) %>%
+  ggplot(aes(x=.fitted,y=.resid)) + geom_point() + 
+  geom_smooth()
+```
+
+Here we can "observe" the violation of homoscedasticity.
+
+## Question 4)
+
+
+
+
+
+
+
