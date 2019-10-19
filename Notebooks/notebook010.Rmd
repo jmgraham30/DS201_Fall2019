@@ -5,10 +5,12 @@ output: html_notebook
 
 ```{r,warning=FALSE,message=FALSE}
 library(tidyverse)
+library(gridExtra)
 library(faraway)
 library(broom)
 library(caret)
 library(boot)
+library(olsrr)
 library(ISLR)
 ```
 
@@ -53,7 +55,31 @@ head(Boston_df)
 summary(Boston_df)
 ```
 
-Notice that each of these variables is quantitative although the chas variable is really a binary classification. We might be interested to try to predict the median value of a home (medv) based on the average number of rooms (rm), the  proportion of owner-occupied units built prior to 1940 (age), and the lower status of the population (lstat). To do this with a linear model (*i.e.* mulitple linear regression) in R we simple use:
+Notice that each of these variables is quantitative although the chas variable is really a binary classification. We might be interested to try to predict the median value of a home (medv) based on the average number of rooms (rm), the  proportion of owner-occupied units built prior to 1940 (age), and the lower status of the population (lstat). 
+
+Let's start by looking at plots of medv versus each of rm, age, and lsata individually:
+```{r}
+Boston_df %>% select(medv,rm,age,lstat) %>%
+  pivot_longer(cols=c("rm","age","lstat")) %>% 
+  ggplot(aes(x=value,y=medv)) + geom_point() + 
+  facet_wrap(~name)
+```
+This plot is potentially misleading due to the differences in scale between these three variables, let's do one at a time:
+```{r}
+p1 <- Boston_df %>% ggplot(aes(x=rm,y=medv)) + geom_point()
+p2 <- Boston_df %>% ggplot(aes(x=age,y=medv)) + geom_point()
+p3 <- Boston_df %>% ggplot(aes(x=lstat,y=medv)) + geom_point()
+grid.arrange(p1,p2,p3,nrow=1)
+```
+
+Let's compute the correlation of medv with each of rm, age, and lstat
+```{r}
+(with(Boston_df,cor(rm,medv)))
+(with(Boston_df,cor(age,medv)))
+(with(Boston_df,cor(lstat,medv)))
+```
+
+To try to predict medv using rm, age, and lstat with a linear model (*i.e.* mulitple linear regression) in R we simple use:
 ```{r}
 Boston_lm <- lm(medv ~ rm + age + lstat,data=Boston_df)
 ```
@@ -167,7 +193,154 @@ summary(Boston_lm)
 ```
 The p-value for the F-statistic here is very small. 
 
+### Another Example
+
+Let's examine a situation where we know that there is a linear relationship between a set of predictors and a response. 
+
+We simulate some data:
+```{r}
+x1 <- rnorm(45,12,3.2)
+x2 <- rnorm(45,3,0.2)
+x3 <- rnorm(45,27,17)
+y <-  0.1*x1 + 15*x2 + 3*x3 - 35 + rnorm(45,sd=13)
+sim_df <- data.frame(x1=x1,x2=x2,x3=x3,y=y)
+```
+
+Now let's obtain a linear regression fit and examine the results:
+```{r}
+lm_sim_df <- lm(y~.,data=sim_df)
+```
+
+```{r}
+tidy(lm_sim_df)
+```
+
+```{r}
+glance(lm_sim_df)
+```
+**Note:** Notice that in the data frame returned by tidy() the statistic column is the F-statistic. 
+
+Let's plot the residual versus fitted:
+```{r}
+augment(lm_sim_df,data=sim_df) %>%
+  ggplot(aes(x=.fitted,y=.resid)) + 
+  geom_point() + geom_smooth()
+```
+
+Let's repeat our permutation test for the F-statistic to test the null hypothesis:
+
+$H_{0}$: $m_{1}=m_{2}=m_{3} = 0$
+
+versus the alternative
+
+$H_{A}$: at least one of $m_{1},m_{2},m_{3}$ is not zero. 
+
+```{r}
+N <- 5000
+perm_F <- numeric(N)
+for (i in 1:N){
+  temp_lm <- lm(sample(y)~.,data=sim_df)
+  perm_F[i] <- summary(temp_lm)$fstatistic[1]
+}
+ggplot(data=NULL,mapping=aes(x=perm_F)) + 
+  geom_histogram() 
+```
+
+Here is the observed F-statistic value:
+```{r}
+(observed_F <- summary(lm_sim_df)$fstatistic[1])
+```
+
+**Question:** Should we reject or fail to reject the null hypothesis? 
+
+**Exercise:** Try this again but remove the dependence of the response $y$ in the simluted data on the preditors. 
 
 
+**Exercise:** What happens if we have the response $y$ in the simluted data depend one or more of the preditors but in a non-linear fashion?
 
 
+## Question 2)
+
+Suppose that we use the F-statistic to conclude that there is sufficient evidence to reject the null hypothesis that all of the "slope" parameters in a linear regression model are zero. The next question is, exactly which of the p predictor variables are associated with the response?
+
+This is referred to as **variable selection.** There are a few different ways to handle this. One way is by brut force where we try out all possible (linear) model combinations. There are three common approaches, the forward selection approach (start with no variables and add one at a time), the backward selection approach (start with all variables and remove one at a time), or a sort of combination of the forward and backward approach.  
+
+One question we must address is, what metric should we use in order to assess the results of comparing each of the different variable combinations. There are several options here, Mallow's $C_{p}$, AIC, BIC, and adjusted $R^2$. See Chapter 3 Section 3.2.2 of [An Introduction to Statistical Learning](http://faculty.marshall.usc.edu/gareth-james/ISL/) for more details. 
+
+Rather than go through all of the details here, we will use the variable selection functions from the [olsrr package](https://cran.r-project.org/web/packages/olsrr/vignettes/intro.html). 
+
+Let's start with an example based on simulated data:
+```{r}
+x1 <- rnorm(45,12,3.2)
+x2 <- rnorm(45,3,0.2)
+x3 <- rnorm(45,27,17)
+y <-  0.1*x1 + 3*x3 - 35 + rnorm(45,sd=13)
+sim_df <- data.frame(x1=x1,x2=x2,x3=x3,y=y)
+```
+
+Notice that we removed any dependence on x2. If we fit the model, here is the result:
+```{r}
+sim_lm_fit <- lm(y~.,data=sim_df)
+summary(sim_lm_fit)
+```
+
+Since there are only three predictors, there are a total of eight possible variable combinations for a linear model so in this case it is not too "expensive" to fit all possible models and compare:
+```{r}
+(var_select_results<-ols_step_all_possible(sim_lm_fit))
+```
+
+Let's look at what all is contained in the output for this function. 
+```{r}
+names(var_select_results)
+```
+We see that the AIC values are also computed:
+```{r}
+var_select_results$aic
+```
+The model that minimizes AIC is regarded as best and we see that this is the model that includes on x1 and x3. 
+
+**Question** Why do we expect this result? 
+
+The plot function will produce a plot:
+```{r}
+plot(var_select_results)
+```
+
+Another similar function is
+```{r}
+(var_subset_result <- ols_step_best_subset(sim_lm_fit))
+```
+
+The plot function works on this as well:
+```{r}
+plot(var_subset_result)
+```
+
+There are also functions that implement forward and backward selection, for example:
+```{r}
+var_forward_select <- ols_step_forward_aic(sim_lm_fit)
+```
+
+```{r}
+plot(var_forward_select)
+```
+
+### Example with Boston Housing Data
+
+Let's try forward slection using AIC on the Boston housing data:
+```{r}
+Boston_lm_all <- lm(medv ~ . , data=Boston_df)
+(Boston_selection <- ols_step_both_aic(Boston_lm_all))
+```
+
+```{r}
+plot(Boston_selection)
+```
+
+```{r}
+Boston_selection$predictors
+```
+
+```{r}
+names(Boston_df)
+```
