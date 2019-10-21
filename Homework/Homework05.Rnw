@@ -15,7 +15,7 @@
 \begin{document}
 
 \begin{center}
-{\bf Intro to Data Science \\ Homework 4: Due Wednesday October 23 at 2:00pm}
+{\bf Intro to Data Science \\ Homework 5: Due Wednesday October 23 at 2:00pm}
 \end{center}
 
 \setlength{\unitlength}{1in}

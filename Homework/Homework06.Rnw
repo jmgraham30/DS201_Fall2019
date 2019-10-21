@@ -1,0 +1,80 @@
+\documentclass[12pt]{article}
+\textwidth=7in
+\textheight=9.5in
+\topmargin=-1in
+\headheight=0in
+\headsep=.5in
+\hoffset  -.85in
+
+\pagestyle{empty}
+
+\usepackage{amsmath,amssymb,amsfonts}
+\usepackage{url}
+
+\renewcommand{\thefootnote}{\fnsymbol{footnote}}
+\begin{document}
+
+\begin{center}
+{\bf Intro to Data Science \\ Homework 6: Due Wednesday October 30 at 2:00pm}
+\end{center}
+
+\setlength{\unitlength}{1in}
+
+\begin{picture}(6,.1)
+\put(0,0) {\line(1,0){6.5}}
+\end{picture}
+
+\renewcommand{\arraystretch}{2}
+
+\vskip.25in
+
+\noindent{\bf  {\Large Exercises:} }
+
+<<echo=FALSE>>=
+suppressMessages(library(tidyverse))
+suppressMessages(library(ISLR))
+suppressMessages(library(knitr))
+suppressMessages(library(boot))
+suppressMessages(library(broom))
+@
+
+\vskip.25in
+
+  \begin{enumerate}
+    \item This exercise involves the use of simple linear regression on the Auto dataset from the ISLR package. 
+    \begin{enumerate}
+      \item  Create a scatter plot of the variables mpg versus horsepower from the Auto data set.
+      \item Describe your observations from the scatter plot. 
+      \item What does the following command do and how should you interpret the result? 
+      <<>>=
+      with(Auto,cor(horsepower,mpg))
+      @
+      \item Use the lm() function to perform a simple linear regression with mpg as the response and horsepower as the predictor. That is, use the following command:
+      <<>>=
+      auto_fit <- lm(mpg~horsepower,data=Auto)
+      @
+      \item What do you learn from the information output by the following commands:
+      <<>>=
+       tidy(auto_fit)
+      @
+      and
+      <<>>=
+       glance(auto_fit)
+      @
+      
+      \item Make a plot of the residuals versus the fitted values from the regression. Recall that you can use the augment function in the broom package to create a data frame that adds the residuals and fitted values from the linear regression to the original data set. What do you conclude from this plot?  
+      \item Compute the MSE and RMSE from the regression. 
+      \item Is there a relationship between the predictor and the response? 
+      \item How strong is the relationship between the predictor and the response? 
+      \item Is the relationship between the predictor and the response positive or negative? 
+      \item Plot the linear regression (remember that you can use geom smooth for this) along with the scatterplot of the data. What do you observe from this plot?  
+    \end{enumerate}
+    
+   \item Use a bootstrap to approximate a 95\% confidence interval for the slope parameter in the linear regression from problem 1. Be sure to make a plot of the bootstrap distribution. 
+    
+    \item Use a permutation test to test the null hypothesis: $H_{0}:$ slope is zero versus the alternative hypothesis $H_{A}:$ slope is not equal to zero in the regression fit for problem 1. A plot is probably very helpful here. 
+    
+   
+  \end{enumerate}
+    
+\end{document}

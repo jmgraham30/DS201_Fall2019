@@ -391,7 +391,7 @@ augment(lm_fit_heteroscedasticity,data=df) %>%
 
 Here we can "observe" the violation of homoscedasticity.
 
-## Question 4)
+## Question 4) 
 
 
 
