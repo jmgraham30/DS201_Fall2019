@@ -88,7 +88,7 @@ return_rss <- function(coeffs,data=linear_df){
 
 Let's compute some different residual sum of square values:
 ```{r}
-(return_rss(c(1,1)))
+(return_rss(c(2.812191,1.848551)))
 ```
 
 In order to determine $\hat{m}$ and $\hat{b}$, we will minimize the residual sum of squares function with respect to the coefficient values $m$ and $b$. In R this can be done with the optim() function:
@@ -110,6 +110,7 @@ Use lm() to obtain a linear fit
 ```{r}
 lm_fit <- lm(y~x,data=linear_df)
 ```
+
 
 Obtain the estimated coefficient values:
 ```{r}
@@ -136,6 +137,11 @@ Finally, let's call augment:
 ```{r}
 lm_fit_aug <- augment(lm_fit)
 head(lm_fit_aug)
+```
+
+
+```{r}
+sum(lm_fit_aug$.resid^2)
 ```
 
 There is a lot of information here. For now, take these points in mind:
