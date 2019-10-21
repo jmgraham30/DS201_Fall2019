@@ -1,0 +1,101 @@
+---
+title: "Data Splitting with caret"
+output: html_notebook
+---
+
+```{r,warning=FALSE,message=FALSE}
+library(caret)
+```
+
+
+# Introduction
+
+The [caret package](http://topepo.github.io/caret/index.html) is a set of functions that attempt to streamline the supervised machine learning process for regression and classification problems. The name caret is an acronym for "Classification and Regression Training". This package is extremely powerful, it faciliatates among other things
+
+1) data splitting 
+2) pre-processing
+3) feature or variable selection
+4) model fitting and tuning
+5) cross-validation
+6) parallelization 
+
+We will only get a small taste of caret by using a few of its capabilities here and there. In this notebook we will introduce data splitting in R using caret. To learn more, the [short intro to caret](https://cran.r-project.org/web/packages/caret/vignettes/caret.html) may be of interest.  
+
+# Data Splitting
+
+Recall that for problems of prediction, we are ultimately interested in test error (a measure of how a trained model performs on previoulsy unseen data). The question is, how do we assess the test error for a trained model? There are three common approaches:
+
+1) Split the data into two randomly selected sets, a training or fitting set, and a test or validation set. Train or fit the model using the training set, and then use the trained model to make predictions based on the test set. These predictions can be used to compute the test error for the test data.  This is an extremely useful thing to do. There is one major reason why it might be problematic in practice. If your data set is not very large, then you may want to use all of your data for training purposes in order to get a good fit. Even if you have a very large data set, there is no way to decide what the optimal split size is for training versus test set. In practice, one often sees an 80\% for training and 20\% for testing split.     
+
+
+2) Use [**cross-validation**](https://en.wikipedia.org/wiki/Cross-validation_(statistics)) to estimate the test error. This is a resampling technique that resamples with replacement to create multiple different "training" and "test" sets. The three most common cross-validation techniques are
+    
+    a) leave-one-out cross-validation (LOOCV) 
+    b) k-fold cross-validation
+    c) repeated k-fold cross-validation (often one uses 10-fold cross-validation repeated 5 times)
+    
+    
+**Exercise:** Read section 5.1 from [An Introduction to Statistical Learning](http://faculty.marshall.usc.edu/gareth-james/ISL/ISLR%20Seventh%20Printing.pdf) and describe each of the three cross-validation techniques listed above. 
+    
+3) Do both.  First create a training set and a test set, do cross-validation on the training set, use this result to select the best trained model, then apply this model to the test set to assess final performance. This is frequently used in situations where the type of model you want to use depends on one or more **hyperparameters**.
+
+
+# createDataPartition
+
+The createDataPartition function from caret can be used to easily create a training and a test set. Examine the documetation:
+```{r}
+?createDataPartition
+```
+
+There are three important points, 
+
+1) You have to input a vector, usually this will be the vector that contains the **response** variable values. 
+2) You specify a proportion to determine the size of the **training** set. 
+3) By default, the function returns a list which contains the indices for the training set. 
+
+**Note:** The help page for createDataPartition also describes additional related functions such as createFolds which can be used to easily form the required subsets for use in cross-validation. 
+
+Let's apply createDataPartition to the iris data set. 
+
+```{r}
+train_indices <- createDataPartition(iris$Species,p=0.75,list=FALSE)
+```
+
+Observe what is contained in train_indices:
+```{r}
+train_indices
+```
+
+
+Now we can use the result to create a iris_train set and an iris_test set:
+
+```{r}
+iris_train <- iris[train_indices, ]
+iris_test <- iris[-train_indices, ]
+```
+
+Compare the sizes of these two:
+```{r}
+(dim(iris_train))
+(dim(iris_test))
+```
+
+
+What happens if we use the default list=TRUE?
+```{r}
+(train_indices_list <- createDataPartition(iris$Species,p=0.75,list=TRUE))
+```
+
+Whether you return a list or not is usually a matter of taste. Notice however that how you create the train and test data is slightly different:
+```{r}
+iris_train <- iris[train_indices_list$Resample1 , ]
+iris_test <- iris[-train_indices_list$Resample1 , ]
+```
+
+**Question:** Why is it necessary to add the dollar sign operator and the Resample1 name? 
+
+
+**Exercise:** Try running createDataPartition with the optional input times set equal to a number greater than 1. What does this do? 
+
+In later notebooks, we will explore and use the createDataPartition and related functions to construct train/test sets for use in leave-one-out and k-fold cross-validation. 
+
