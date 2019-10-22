@@ -1,0 +1,192 @@
+---
+title: "Cross-Validation for Regression"
+output: html_notebook
+---
+
+```{r,warning=FALSE,message=FALSE}
+library(tidyverse)
+library(broom)
+library(caret)
+```
+
+
+# Introduction
+
+
+Cross-validation can be used to estimate the test
+error associated with a given statistical learning method in order to evaluate
+its performance, or to select the appropriate level of flexibility. For more details see Chapter 5 from [An Introduction to Statistical Learning](http://faculty.marshall.usc.edu/gareth-james/ISL/ISLR%20Seventh%20Printing.pdf). 
+
+
+The simplest cross-validation technique is to split a dataset into two parts, a training set that is used to train (or fit) the model and a test or validation set that is used to exmaine how the model performs on previously unseen data. We have seen already, the the createDataPartition function in the caret package can be used to construct a training and a test set. Let's see this in application. 
+
+# Train and Test Set Application 
+
+Consider the diamonds data set from gglot2. 
+
+```{r}
+head(diamonds)
+```
+
+
+Let's use a regression model to try to predict the price of a diamond based on the variables carat, depth, table, x, y, and, z. Before we do this, there is one point to consider. Look at a histogram of price. There is a very long tail. 
+
+```{r}
+diamonds %>% ggplot(aes(x=price)) + geom_histogram()
+```
+
+Because of this, let's transform the price variable by computing it's log base 10 and add this as a new variable. Then we will model log_price using the variables carat, depth, table, x, y, and, z
+
+```{r}
+diamonds$log_price <- log10(diamonds$price)
+```
+
+
+Next, we will split the data. 
+
+```{r}
+train_ids <- createDataPartition(diamonds$price,p=0.75,list = F)
+diamonds_train <- diamonds[train_ids, ]
+diamonds_test <- diamonds[-train_ids, ]
+```
+
+We will fit a model using the training set:
+```{r}
+diamonds_fit <- lm(log_price ~ carat + depth + table + x + y + z,data=diamonds_train)
+```
+
+Let's look at the result of our fit:
+```{r}
+(train_parms <- tidy(diamonds_fit))
+```
+
+```{r}
+(train_stats <- glance(diamonds_fit))
+```
+Notice that the RSS is about 577. 
+
+
+Let's also augment the data with the results of the fit:
+```{r}
+diamonds_fit_aug <- augment(diamonds_fit,data=diamonds_train)
+diamonds_fit_aug %>% ggplot(aes(x=.fitted,y=.resid)) + geom_point()
+```
+
+All of the variables seem to interact with log_price and there is a reasonably high degree of goodness of fit. While there are some outliers, for the most part it seems like  linear model preforms reasonably well. Let's use the fitted (trained) model to make predictions based on the test set. First, we should compute the MSE which is simply the RSS divided by the number of rows in the training data:
+
+```{r}
+(train_MSE <- train_stats$deviance/nrow(diamonds_train))
+```
+
+Alternatively, we could have computed this with
+```{r}
+sum(diamonds_fit_aug$.resid^2)/length(diamonds_fit_aug$.resid)
+```
+
+This is a pretty good training MSE, although we have already seen that a good training MSE does not necessarily lead to a good test MSE. We will make our predictions and add this to the test set data:
+```{r}
+diamonds_test$pred_vals <- predict(diamonds_fit,newdata = diamonds_test)
+```
+
+Let's look at the first few rows of the result:
+```{r}
+head(diamonds_test)
+```
+
+We can add the residuals:
+```{r}
+diamonds_test <- diamonds_test %>% mutate(resids = log_price - pred_vals)
+```
+
+Now we are set up to compute the test MSE:
+```{r}
+sum(diamonds_test$resids^2)/length(diamonds_test$resids)
+```
+
+There is a slight increase in the test MSE but it is very comparable to the training MSE. What does this suggest? 
+
+
+Let's compute the MSE for a fit using the entire data set:
+```{r}
+total_fit <- lm(log_price ~ carat + depth + table + x + y + z,data=diamonds)
+total_fit_aug <- augment(total_fit,data=diamonds)
+(total_MSE <- sum(total_fit_aug$.resid^2)/length(total_fit_aug$.resid))
+```
+
+
+**Question:** Can you think of a reason why the MSE is small? Do you think that we have built a good predictive model? 
+
+ 
+# Applying caret for repeated k-fold cross-validation
+
+
+Let's split out diamonds data again:
+```{r}
+train_ids <- createDataPartition(diamonds$log_price,p=0.75,list=F)
+diamonds_train <- diamonds[train_ids, ]
+diamonds_test <- diamonds[-train_ids, ]
+```
+
+Now we will conduct 10-fold cross-validation repeated 5 times on the training set to train a linear model using lm. 
+```{r}
+tC <- trainControl(method="repeatedcv",number=10,repeats = 5)
+diamonds_train_lm <- train(log_price ~ carat + depth + table + x + y + z,data=diamonds_train,method="lm",trControl=tC)
+```
+
+There is a lot of information contained in the output of the train function (which is in caret). Some of the useful pieces of information are
+```{r}
+diamonds_train_lm$metric
+```
+
+This specifies what summary metric will be used to select the optimal model, which here tells us that the RMSE is the metric that is used (for a linear model) during resampling. 
+
+```{r}
+diamonds_train_lm$resample
+```
+
+This displays the metric (and some statistics) for each resample fit. Let's investigate this a little more:
+```{r}
+fold01_rep1_ids <- diamonds_train_lm$control$index$Fold01.Rep1
+diamonds_train_01_1 <- diamonds_train[fold01_rep1_ids , ]
+diamonds_test_01_1 <- diamonds_train[-fold01_rep1_ids , ]
+fit_01_1 <- lm(log_price ~ carat + depth + table + x + y + z,data=diamonds_train_01_1)
+preds <- predict(fit_01_1,newdata=diamonds_test_01_1)
+(RMSE_01_1 <- sqrt(sum((preds - diamonds_test_01_1$log_price)^2)/nrow(diamonds_test_01_1)))
+```
+
+Thus we see that the resample component of the output from train contains each of the test RMSE values computed over the repeated cross-validation routine. The mean of all of these will provide an estimate for the test error. 
+
+
+```{r}
+diamonds_train_lm$results
+```
+
+Compare the RMSE value here with the following:
+
+```{r}
+mean(diamonds_train_lm$resample$RMSE)
+```
+
+
+```{r}
+diamonds_train_lm$finalModel
+```
+
+This tells us the model with the best parameters. We can use this to make predictions on the test set:
+```{r}
+test_preds <- predict(diamonds_train_lm$finalModel,newdata = diamonds_test)
+```
+
+Let's compute the test RMSE:
+```{r}
+test_resids <- diamonds_test$log_price - test_preds
+test_MSE <- sum((test_resids)^2)/length(test_resids)
+(test_RMSE <- sqrt(test_MSE))
+```
+
+Compare this with the RMSE from
+```{r}
+diamonds_train_lm$results$RMSE
+```
+
+
