@@ -1,0 +1,29 @@
+---
+title: "Introduction to Classification"
+output: html_notebook
+---
+
+```{r,warning=FALSE,message=FALSE}
+library(tidyverse)
+library(broom)
+library(caret)
+```
+
+
+# Introduction 
+
+Recall the iris data set:
+```{r}
+head(iris)
+```
+
+Attempting to predict the species of a flower based on the length and width measurements is a **classification** problem. In this case, the reponse variable assumes one of three possible class values: setosa, virginica, or versicolor. 
+
+There is a special type of classification problem, **binary classification** where the categorical response variable takes values from just two distinct possible outcomes. There is a standard regression method for binary classification called logistic regression. Since regression is already a familiar concept, we will begin by discussing logistic regression, how it is implemented in R, and how to apply it. 
+
+# Logistic Regression
+
+
+# KNN for Classification
+
+This [online demo](https://codepen.io/gangtao/pen/PPoqMW) is very helful. 
