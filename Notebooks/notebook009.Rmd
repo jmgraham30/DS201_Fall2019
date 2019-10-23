@@ -250,6 +250,22 @@ sum((lm_fit_aug$.resid)^2)/nrow(lm_fit_aug)
 It is worth noting that we can use the bootstrap to approximate the standard error values return as the column .se.fit in the call to augment(). 
 
 ```{r}
+(test_data_frame <- data.frame(one=c(6,5,4,3,2),two=c(-1,4,-2,3,0)))
+```
+
+
+```{r}
+(sampled_ids <- sample(1:5,replace = T))
+```
+
+
+```{r}
+test_data_frame[sampled_ids, ]
+```
+
+
+
+```{r}
 N <- 5000
 
 boot_fit <- function(data,id){
@@ -261,6 +277,7 @@ boot_fit <- function(data,id){
 boot_result <- boot(linear_df,boot_fit,R=N)
 
 ```
+
 
 
 ```{r}
