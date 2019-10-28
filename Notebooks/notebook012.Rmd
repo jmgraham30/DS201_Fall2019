@@ -5,8 +5,10 @@ output: html_notebook
 
 ```{r,warning=FALSE,message=FALSE}
 library(tidyverse)
+library(ISLR)
 library(broom)
 library(caret)
+library(ROCR)
 ```
 
 
@@ -17,13 +19,161 @@ Recall the iris data set:
 head(iris)
 ```
 
-Attempting to predict the species of a flower based on the length and width measurements is a **classification** problem. In this case, the reponse variable assumes one of three possible class values: setosa, virginica, or versicolor. 
+Attempting to predict the species of a flower based on the length and width measurements is a **classification** problem. In this case, the reponse variable assumes one of three possible class values: setosa, virginica, or versicolor. Let's look at the reponse variable:
+```{r}
+table(iris$Species)
+```
+
+This is a multi-class classification problem since there are more than two distinct classes in wich observations may fall. 
 
 There is a special type of classification problem, **binary classification** where the categorical response variable takes values from just two distinct possible outcomes. There is a standard regression method for binary classification called logistic regression. Since regression is already a familiar concept, we will begin by discussing logistic regression, how it is implemented in R, and how to apply it. 
 
 # Logistic Regression
 
+Consider the Default data set from the ISLR package:
+```{r}
+?Default
+```
 
+
+```{r}
+dim(Default)
+```
+
+
+
+```{r}
+head(Default)
+```
+
+```{r}
+table(Default$default)
+```
+
+Let's consider a simple problem. Can we use the average balance that the customer has remaining on their credit card after making their monthly payment (balance variable) to predict if a customer will default on their loan or not? 
+
+
+Let's start with some visualizations:
+```{r}
+Default %>% ggplot(aes(x=balance,color=default)) + geom_freqpoly()
+```
+
+
+```{r}
+Default %>% ggplot(aes(x=balance,y=balance,color=default)) + 
+ geom_point()
+```
+
+**Question:** What do these plots tell us? 
+
+We will make one more plot that may be helpful by first converting the default variable into a numerical variable that takes on either 0 (for No) or 1 (for Yes). 
+```{r}
+Default_to_fit <- Default %>% mutate(default_num=ifelse(default == "Yes",1,0))
+```
+
+Consider the following plot:
+```{r}
+Default_to_fit %>% ggplot(aes(x=balance,y=default_num,color=default)) + 
+ geom_point()
+```
+
+We will see how logistic regression can be used to model this problem. We start with the R implementation and then explain the mathematical details afterward. The basic idea is that rather than modeling the response $Y$ directly, logistic regression models the probability that $Y$ belongs to a particular category. 
+
+
+We will start by creating a training and test set:
+```{r}
+train_ids <- createDataPartition(Default_to_fit$default_num,p=0.75,list=F)
+
+Default_train <- Default_to_fit[train_ids, ]
+
+Default_test <- Default_to_fit[-train_ids, ]
+```
+
+Let's look at the respective sizes of the two sets:
+```{r}
+(dim(Default_train))
+(dim(Default_test))
+```
+
+The R implementation of logistic regression is done by the function glm() (generalized linear model) with the family arugment set to binomial. We will explain the reasons for this later. 
+```{r}
+default_glm_mod = train(
+ form = default ~ balance,
+ data = Default_train,
+ trControl = trainControl(method = "repeatedcv", number = 10,repeats = 5),
+ method = "glm",
+ family = "binomial"
+)
+```
+
+We can examine some of the resulting output:
+
+An assessment of the performance is shown with:
+```{r}
+default_glm_mod$results
+```
+
+and the best model is:
+```{r}
+default_glm_mod$finalModel
+```
+
+## Interpreting the results from logistic regression
+
+Logistic regression models the conditional probability $P(Y=1 | X)$ (the probability that the response is 1 given a particular value for the predictor) with the function
+
+$P(Y=1 | X) = \frac{e^{mX + b}}{1 + e^{mX + b}}$. 
+
+There are two points to take away from this formula
+
+1) The right hand side has the form $f(mX + b)$, that is, the right hand side is a function of the linear expression $mX + b$.
+
+2) The right hand side is always a number that falls between 0 and 1. For the sake of simplicity, let's use the notational convention $p(X) = P(Y=1 | X)$ to rewrite the above expression as
+
+$p(X) = \frac{e^{mX + b}}{1 + e^{mX + b}}$, 
+
+then some algebra shows that 
+
+$\frac{p(X)}{1 - p(X)} = e^{mX + b}$,
+
+which leads to 
+
+$\ln\left( \frac{p(X)}{1 - p(X)} \right) = mX + b$. 
+
+**Important point:** Logistic regression estimates the parameters $m$ and $b$.  Then the estimates $\hat{m}$ and $\hat{b}$ for $m$ and $b$ can be used in the formula
+
+$p(X) = \frac{e^{mX + b}}{1 + e^{mX + b}}$
+
+to compute the probability that $Y=1$ for a given value of the predictor $X$.  
+
+Let's see this in our example problem:
+
+```{r}
+b_hat <- coefficients(default_glm_mod$finalModel)[1]
+m_hat <- coefficients(default_glm_mod$finalModel)[2]
+my_log_reg_exp <- exp(b_hat + m_hat*Default$balance)
+my_log_reg <- my_log_reg_exp/(1 + my_log_reg_exp)
+Default_to_fit %>% ggplot(aes(x=balance,y=default_num,color=default)) + 
+ geom_point() + geom_line(data=NULL,mapping=aes(x=Default$balance,y=my_log_reg),color="black",lwd=1)
+```
+
+This shows the regression curve defined by $y = \frac{e^{\hat{m}X + \hat{b}}}{1 + e^{\hat{m}X + \hat{b}}}$. 
+
+The question is, how do we use the probability values output from the losgitic regression model to **classify** the output as No (0) or Yes (1). This invloves setting a **threshold** value. For example, we might say, any balance value that leads to a probability that $Y=1$ that is greater than 0.5 should classify the response as Yes (or 1). This is called the **decision criterion**. Suppose we set our decision criterion at 0.5, then the pictures looks like
+```{r}
+b_hat <- coefficients(default_glm_mod$finalModel)[1]
+m_hat <- coefficients(default_glm_mod$finalModel)[2]
+my_log_reg_exp <- exp(b_hat + m_hat*Default$balance)
+my_log_reg <- my_log_reg_exp/(1 + my_log_reg_exp)
+Default_to_fit %>% ggplot(aes(x=balance,y=default_num,color=default)) + 
+ geom_point() + geom_line(data=NULL,mapping=aes(x=Default$balance,y=my_log_reg),color="black",lwd=1) + 
+  geom_hline(yintercept = 0.5,color="red")
+```
+
+Obviously there is a judgment call that is being made here. Later we will look at a technique (the receiver operator characteristic (ROC)) for assessing the consequences of choosing a particular decision criterion. For now, let's look at the classification error rate obtained by using our decision criterion to make classifications. 
+
+
+**Question:** What does this plot show? 
 # KNN for Classification
 
 This [online demo](https://codepen.io/gangtao/pen/PPoqMW) is very helful. 
