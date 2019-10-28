@@ -172,6 +172,10 @@ Default_to_fit %>% ggplot(aes(x=balance,y=default_num,color=default)) +
 
 Obviously there is a judgment call that is being made here. Later we will look at a technique (the receiver operator characteristic (ROC)) for assessing the consequences of choosing a particular decision criterion. For now, let's look at the classification error rate obtained by using our decision criterion to make classifications. 
 
+```{r}
+table(Default_test$default,predict(default_glm_mod,newdata = Default_test))
+```
+
 
 **Question:** What does this plot show? 
 # KNN for Classification
