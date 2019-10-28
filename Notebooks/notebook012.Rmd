@@ -77,6 +77,8 @@ Default_to_fit %>% ggplot(aes(x=balance,y=default_num,color=default)) +
  geom_point()
 ```
 
+**Question:** What does this plot show? 
+
 We will see how logistic regression can be used to model this problem. We start with the R implementation and then explain the mathematical details afterward. The basic idea is that rather than modeling the response $Y$ directly, logistic regression models the probability that $Y$ belongs to a particular category. 
 
 
@@ -170,14 +172,79 @@ Default_to_fit %>% ggplot(aes(x=balance,y=default_num,color=default)) +
   geom_hline(yintercept = 0.5,color="red")
 ```
 
+**Question:** What does this plot show? 
+
 Obviously there is a judgment call that is being made here. Later we will look at a technique (the receiver operator characteristic (ROC)) for assessing the consequences of choosing a particular decision criterion. For now, let's look at the classification error rate obtained by using our decision criterion to make classifications. 
 
+A typical method for displaying the results of a classification is with a **confusion matrix**
 ```{r}
 table(Default_test$default,predict(default_glm_mod,newdata = Default_test))
 ```
 
+There is also a confusion matrix function in caret:
+```{r}
+confusionMatrix(predict(default_glm_mod,newdata = Default_test),Default_test$default,positive = "Yes")
+```
 
-**Question:** What does this plot show? 
+
+Thus, the test classification error rate is
+```{r}
+(59 + 9)/(2402 + 9 + 59 + 30)
+```
+
+Also observe that
+```{r}
+1 - 0.0272
+```
+
+How do we know that the predict() function used the 0.5 threshold for the decision criterion for classification? It is possible to return the probability values with the predict function:
+```{r}
+head(predict(default_glm_mod$finalModel,newdata = Default_test,type="response"),10)
+```
+
+Let's apply our decision criterion to obtain classification values:
+```{r}
+pred_probs <- predict(default_glm_mod$finalModel,newdata = Default_test,type="response")
+pred_classes <- ifelse(pred_probs > 0.5,"Yes","No")
+table(predict(default_glm_mod,newdata = Default_test),pred_classes)
+```
+
+Let's plot the predictions and the known results together:
+```{r}
+Default_to_fit_test <- Default_test %>% mutate(default_num=ifelse(default == "Yes",1,0))
+Default_to_fit_test$pred_class <- predict(default_glm_mod,newdata = Default_test)
+Default_to_fit_test <- Default_to_fit_test %>% mutate(default_num_pred=ifelse(pred_class == "Yes",1,0))
+Default_to_fit_test %>% ggplot(aes(x=balance)) + 
+  geom_point(aes(y=default_num,color=default)) + 
+  geom_point(aes(y=default_num_pred,shape=pred_class))
+```
+
+Compare this plot with the confuion matrix. 
+
+
+## ROC Curves
+
+```{r}
+temp_res <- predict(default_glm_mod$finalModel,Default_test,type = "response") %>%
+ prediction(Default_test$default) %>% performance("auc")
+```
+
+```{r}
+temp_rates <- predict(default_glm_mod$finalModel,Default_test,type = "response") %>%
+ prediction(Default_test$default) %>% performance("tpr","fpr")
+```
+
+```{r}
+ggplot(data=NULL,mapping=aes(x=temp_rates@x.values[[1]],y=temp_rates@y.values[[1]])) + geom_line()
+```
+
+```{r}
+predict(default_glm_mod$finalModel,Default_test,type = "response") %>%
+ prediction(Default_test$default) %>% performance("auc") %>% attr("y.values")
+```
+
+
+
 # KNN for Classification
 
 This [online demo](https://codepen.io/gangtao/pen/PPoqMW) is very helful. 
