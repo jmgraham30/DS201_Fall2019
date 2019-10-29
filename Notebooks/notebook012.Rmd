@@ -196,6 +196,7 @@ Also observe that
 ```{r}
 1 - 0.0272
 ```
+is exactly the quantity output as Accuracy by the confusionMatrix() function. 
 
 How do we know that the predict() function used the 0.5 threshold for the decision criterion for classification? It is possible to return the probability values with the predict function:
 ```{r}
@@ -222,27 +223,96 @@ Default_to_fit_test %>% ggplot(aes(x=balance)) +
 Compare this plot with the confuion matrix. 
 
 
+Evaluating the results of a classification model means measuring how accurately our predicted labels match the "gold standard" labels in the evaluation set. For the common case of
+two distinct labels or classes (binary classification), we sometimes call the more interesting of the two classes (*e.g.* Yes (1) in the Default data) as positive and the other class as
+negative (*e.g.* No (0) in the Default data). Notice that we specified the positive class in the confusionMatrix() function. 
+
+The confusion matrix is very helpful in evaluating classifications and there are several quantities that can be derived from the confusion matrix.   
+
+1) *True Positives (TP)*: Here our classifier labels a positive item as positive, resulting in a win for the classifier.
+2) *True Negatives (TN)*: Here the classifier correctly determines that a member of the negative class deserves a negative label. Another win.
+3) *False Positives (FP)*: The classifier mistakenly calls a negative item as a positive, resulting in a “type I” classification error.
+4) *False Negatives (FN)*:  The classifier mistakenly declares a positive item as negative, resulting in a “type II” classification error.
+
+The the accuracy of a classifier is given as
+
+$\text{Accuracy} = \frac{TP + TN}{TP + TN + FP + FN}$. 
+
+**Note:** Sometimes you see the following notation:
+
+* $N_{+} = TP + FN$ - the number of true positives
+* $N_{-} = TN + FP$ - the number of true negatives
+* $\hat{N}_{+}=TP + FP$ - the number of classified positives
+* $\hat{N}_{-}=TN + FN$ - the number of classified negatives
+
+Then the **true positive rate** (TPR) is 
+
+$TPR = \frac{TP}{N_{+}} = \frac{TP}{TP + FN}$,
+
+and 
+
+the **false positive rate** (FPR) is 
+
+$FPR = \frac{FP}{N_{-}} = \frac{FP}{TN + FP}$. 
+
+
+A **reciever operator characteristic (ROC) curve** proivdes a way to visualize the performance of a binary classifier as the threshold (decision criterion) varies from 0 to 1. 
+
 ## ROC Curves
 
+An ROC curve plots the **true positive rate** versus the **false positive rate**.  There are two important questions that an ROC curve helps to address:
+
+1) What is the overall quality of classifier? The area under the ROC curve (AUC) provides a quantitative measure of this. 
+2) What is an effective theshold (decision criterion)? The ROC curve provides a visual representation of our complete space of options in putting together a classifier. So an ROC curve will help us to pick the best option.
+
+There are several functions in the ROCR package that enable us to construct and ROC curve and to compute the AUC. 
+
 ```{r}
-temp_res <- predict(default_glm_mod$finalModel,Default_test,type = "response") %>%
- prediction(Default_test$default) %>% performance("auc")
+temp_pred <- prediction(predict(default_glm_mod$finalModel,Default_test),Default_test$default)
+temp_perf <- performance(temp_pred,"tpr","fpr")
+plot(temp_perf)
 ```
 
+To do this with ggplot we need to extract more information. One way to do this is as follows:
 ```{r}
 temp_rates <- predict(default_glm_mod$finalModel,Default_test,type = "response") %>%
  prediction(Default_test$default) %>% performance("tpr","fpr")
+fpr <- temp_rates@x.values[[1]]
+tpr <- temp_rates@y.values[[1]]
+threshold_vals <- temp_rates@alpha.values[[1]]
+ROC_df <- data.frame(fpr=fpr,tpr=tpr,threshold_vals=threshold_vals)
 ```
 
 ```{r}
-ggplot(data=NULL,mapping=aes(x=temp_rates@x.values[[1]],y=temp_rates@y.values[[1]])) + geom_line()
+ROC_df %>% ggplot(aes(x=fpr,y=tpr)) + geom_line()
 ```
 
+Consider what happens as we increase our threshold from 0 to 1. 
+
+```{r}
+ROC_df %>% ggplot(aes(x=fpr,y=tpr,color=threshold_vals)) + 
+  geom_line() + 
+  scale_colour_gradientn(colours = terrain.colors(10))
+```
+
+
+Every time we change our threshold value, we either increase
+the number of true positives (if this example was positive) or false positives (if this example was in fact a negative). At the very left, we achieve true/false
+positive rates of 0%, since the classifier labeled nothing as positive at that cutoff.
+Moving as far to the right as possible, all examples will be labeled positively, and
+hence both rates become 100%. Each threshold in between defines a possible
+classifier, and the sweep defines a staircase curve in true/false positive rate space
+taking us from (0%,0%) to (100%,100%).
+
+This also explains why the area under the curve is a quantitative measure the effectiveness of a classification model. 
+
+This command computes the area under the ROC curve:
 ```{r}
 predict(default_glm_mod$finalModel,Default_test,type = "response") %>%
  prediction(Default_test$default) %>% performance("auc") %>% attr("y.values")
 ```
 
+**Note** The maximum possibel AUC is 1, the closer to 1, the more effective the classifier. 
 
 
 # KNN for Classification
