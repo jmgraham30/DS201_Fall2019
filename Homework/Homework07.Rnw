@@ -1,0 +1,131 @@
+\documentclass[12pt]{article}
+\textwidth=7in
+\textheight=9.5in
+\topmargin=-1in
+\headheight=0in
+\headsep=.5in
+\hoffset  -.85in
+
+\pagestyle{empty}
+
+\usepackage{amsmath,amssymb,amsfonts}
+\usepackage{url}
+
+\renewcommand{\thefootnote}{\fnsymbol{footnote}}
+\begin{document}
+
+\begin{center}
+{\bf Intro to Data Science \\ Homework 7: Due Friday November 8 at 2:00pm}
+\end{center}
+
+\setlength{\unitlength}{1in}
+
+\begin{picture}(6,.1)
+\put(0,0) {\line(1,0){6.5}}
+\end{picture}
+
+\renewcommand{\arraystretch}{2}
+
+\vskip.25in
+
+\noindent{\bf  {\Large Exercises:} }
+
+<<echo=FALSE>>=
+suppressMessages(library(tidyverse))
+suppressMessages(library(ISLR))
+suppressMessages(library(knitr))
+suppressMessages(library(boot))
+suppressMessages(library(broom))
+suppressMessages(library(caret))
+@
+
+\vskip.25in
+
+\begin{enumerate}
+
+\item  For each part, indicate whether we would generally expect the performance of a flexible model (\emph{i.e.}\ one with more degrees of freedom) to be better or worse than an inflexible method. Justify your answer. 
+       \begin{enumerate}
+         \item The sample size (number of observations) $n$ is extremely large, and the number of predictors $p$ is small. 
+         \item The number of predictors $p$ is extremely large, and the number of observations $n$ is small. 
+         \item The relationship between the predictors and responses is highly non-linear. 
+         \item The variance of the error terms $\epsilon$, is extremely high. 
+       \end{enumerate}
+       
+\item Explain whether each scenario is a classification or regression problem, and indicate whether we are most interested in inference or prediction. Finally, provide the number of observations $n$ and the number of predictors $p$. 
+           \begin{enumerate}
+             \item We collect a set of data on the top 500 firms in the US. For each firm we record profit, number of employees, industry and the CEO salary. We are interested in understanding which factors affect CEO salary. 
+             \item We are considering launching a new product and wish to know
+whether it will be a \emph{success} or a \emph{failure}. We collect data on 20
+similar products that were previously launched. For each product
+we have recorded whether it was a success or failure, price
+charged for the product, marketing budget, competition price,
+and ten other variables.
+\end{enumerate}
+
+\item The following problems relate to linear regression and are taken from \emph{An Introduction to Statistical Learning}, \url{http://faculty.marshall.usc.edu/gareth-james/ISL/ISLR%20Seventh%20Printing.pdf}.
+
+     \begin{enumerate}
+\item  Do Conceptual Exercise 2 from Chapter 3 of \emph{An Introduction to Statistical Learning}. {\bf Hint:} Read section 3.5 first.         
+    \item  Do Conceptual Exercise 3 from Chapter 3 of \emph{An Introduction to Statistical Learning}.
+     \item  Do Applied Exercise 9 from Chapter 3 of \emph{An Introduction to Statistical Learning}.
+     \end{enumerate}
+     
+     \item In this problem you are asked to write R code to do simple quadratic regression ``by hand.'' Recall that in the lecture R notebook for simple linear regression, we computed simple linear regression ``by hand'' by carrying out the following steps:
+     
+     \begin{enumerate}
+     \item We wrote a function to represent the linear expression $ax+b$, where $x$ is the predictor variable and $a$ and $b$ are the parameters. 
+     \item We wrote a function to compute the MSE for the predictor values $x$ and for input values of the parameters $a$ and $b$. This will be a function of the parameters which we made sure was vectorized.
+     \item  We used the {\tt optim()} function to minimize the MSE function as a function of the parameter values. 
+     \end{enumerate}
+     
+     
+     Your task is to carry out the same steps now using a quadratic expression $ax^2 + bx + c$ instead of a linear expression. In order to test your code, simulate some data (make sure to add a small amount of noise) that is well-approximated by a quadratic function.  Then, simulate some data that is should not be well-approximated by a quadratic function.  
+
+\item If possible, try using both simple linear regression and multiple linear regression on your project dataset. Alternatively, you can use the {\tt Carseats} data from the {\tt ISLR} package. Describe what you do and assess the results. Specifically, what if anything does (either simple or multiple) linear regression tell you about (some or all of) the variables in your data? Do you have any evidence that linear regression helps to accurately explain at least part of your dataset? Be sure to make plots such as scatter plots and residual versus fitted plots. Use some form of cross-validation to estimate test error.  
+  
+
+\item Solve the expression
+\[ B = \frac{A}{1 + A}, \]
+for $A$. Apply your result to show that
+\[ p(X) = \frac{e^{mX+b}}{1 +e^{mX+b} },\]
+is equivalent to 
+\[ \frac{p(X)}{1 - p(X)} = e^{mX+b}.\]
+Now use the previous result to show that
+\[ \ln\left(\frac{p(X)}{1 - p(X)} \right) = mX+b. \]
+
+
+\item The following code produces the confusion matrix resulting from a logistic regression model with 0.5 threshold value decision criterion applied to classify responses in the {\tt Default} data set from the {\tt ISLR} package. 
+<<>>=
+log_fit <- glm(default~balance,data=Default,family = "binomial")
+pred_vals <- predict(log_fit,newdata = Default,type="response")
+threshold_val <- 0.5
+Default$pred_class <- factor(ifelse(pred_vals > threshold_val,"Yes","No"))
+conf_mat <- confusionMatrix(Default$pred_class,Default$default,positive="Yes")
+conf_mat$table
+@
+
+Modify the code to recompute the confusion matrix for different threshold values. Use each resulting confusion matrix to compute the true positive rate and the false positive rate. Is 0.5 the optimal threshold value? Explain why or why not.  
+
+\item This question should be answered using the {\tt Weekly} data set, which is part of the {\tt ISLR } package. This data is similar in nature to the {\tt Smarket} data set which is examined in section 4.6 of the book \emph{An Introduction to Statistical Learning}. 
+    
+    \begin{enumerate}
+      \item Produce some numerical and graphical summaries of the {\tt Weekly} data. Do there appear to be patterns? 
+      
+      \item Use the full data set to perform a logistic regression with {\tt Direction} as the response variable and the five lag variables plus {\tt Volume} as predictors. Use the tidy() function in the {\tt broom} package to print the results. Do any of the predictors appear to be statistically significant? If so, which ones? 
+      
+      
+      \item Compute the confusion matrix  and overall fraction of correct predictions. Explain what the confusion matrix is telling you about the types of mistakes made by logistic regression. 
+      
+      \item Construct an ROC curve for the logistic regression and compute the area under the ROC curve. Remember that this can be done with the functions in the {\tt ROCR} package used in class. 
+      
+     \item Now fit the logistic regression model using as training data period from 1990 to 2008, with {\tt Lag2 } as the only predictor. Compute the confusion matrix and the overall fraction of correct predictions for the held out data (that is, the data from 2009 to 2010).
+     
+     \item Repeat (e) using KNN with $K=1$. 
+     
+     \item Experiment with different combinations of predictors, including possible transformations and interactions, for each of the methods. Report the variables, method, and associated confusion matrix that appears to provide the best results on the held out data. Also experiment with values of $K$ when using KNN.   
+      
+    \end{enumerate} 
+
+\end{enumerate}
+
+\end{document}
