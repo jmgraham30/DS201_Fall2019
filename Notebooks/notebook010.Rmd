@@ -168,6 +168,10 @@ versus the alternatice hypothesis
 
 $H_{A}$: At least one of the $m_{i}$ coefficients is non-zero. 
 
+```{r}
+summary(Boston_lm)
+```
+
 Notice that we can obtain the F-statistic value from the output of lm() and do not need to use a formula for it:
 ```{r}
 (observed_F <- summary(Boston_lm)$fstatistic[1])
@@ -202,7 +206,7 @@ We simulate some data:
 x1 <- rnorm(45,12,3.2)
 x2 <- rnorm(45,3,0.2)
 x3 <- rnorm(45,27,17)
-y <-  0.1*x1 + 15*x2 + 3*x3 - 35 + rnorm(45,sd=13)
+y <- 2*(x1)^2 + 3*x2*x3 - 35 + rnorm(45,sd=13)
 sim_df <- data.frame(x1=x1,x2=x2,x3=x3,y=y)
 ```
 
