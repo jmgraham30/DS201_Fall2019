@@ -318,3 +318,51 @@ predict(default_glm_mod$finalModel,Default_test,type = "response") %>%
 # KNN for Classification
 
 This [online demo](https://codepen.io/gangtao/pen/PPoqMW) is very helful. 
+
+## KNN Applied to Iris
+
+```{r}
+train_ids <- createDataPartition(iris$Species,p=0.75,list = F)
+iris_train <- iris[train_ids, ]
+iris_test <- iris[-train_ids, ]
+```
+
+
+
+```{r}
+tC <- trainControl(method="repeatedcv",number = 10,repeats = 5)
+tG <- expand.grid(k=seq(1,25,by=2))
+```
+
+
+
+```{r}
+train_result <- train(Species~.,data=iris_train,trControl=tC,tuneGrid=tG,method="knn",preProcess = c("center", "scale"))
+```
+
+
+
+```{r}
+train_result$results
+```
+
+
+
+```{r}
+plot(train_result)
+```
+
+
+```{r}
+best_preds <- predict(train_result,newdata = iris_test[ ,1:4])
+
+confusionMatrix(best_preds,iris_test$Species)
+```
+
+
+```{r}
+iris_test$pred_vals <- best_preds
+
+iris_test %>% ggplot(aes(x=Petal.Length,y=Petal.Width,color=Species,shape=pred_vals)) + 
+  geom_point()
+```
