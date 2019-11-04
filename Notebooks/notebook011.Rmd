@@ -119,6 +119,17 @@ total_fit_aug <- augment(total_fit,data=diamonds)
  
 # Applying caret for repeated k-fold cross-validation
 
+The caret package has functions to carry out the following machine learning steps:
+
+1) Partition the data set into a training set and a test set (createDataPartition()).
+2) Preprocess the data (preProcess()), this includes scaling variables as well as carrying out imputation as a method for dealing with missing values.
+3) Create dummy variables to transform categorical variables into numerical ones (dummyVars()).
+4) Feature selection (rfe()).
+5) **Cross-validation, training**, and hyperparameter tuning (trainControl() and train()).
+6) Compute variable importance (varImp()).
+7) Use the model to make predictions (predict()). 
+
+The [tutorial here](https://www.machinelearningplus.com/machine-learning/caret-package/) shows how to use caret to go through all of the typical machine learning steps. 
 
 Let's split out diamonds data again:
 ```{r}
