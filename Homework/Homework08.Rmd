@@ -49,7 +49,7 @@ Compare the training error performance of this model with the performance using 
 
 Recall that for a random forest model the out of bag samples provide a means to estimate test error. Thus, the following command will provide a test error estimate for the bagged regression tree:
 ```{r}
-mean(rf_mod$mse)
+rf_mod$mse[500]
 ```
 
 How does the performance of the bagged regression tree compare with that of multiple linear regression and a single regression tree in terms of the estimated test error? 
