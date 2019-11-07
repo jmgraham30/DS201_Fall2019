@@ -1,0 +1,72 @@
+---
+title: "Homework 8"
+output: html_notebook
+---
+
+```{r,message=FALSE,warning=FALSE}
+library(tidyverse)
+library(caret)
+library(rpart)
+library(randomForest)
+library(faraway)
+```
+
+## Exercises
+
+1) Consider the gala data set from the faraway package that contains observations about the number of species on each of the 30 Galapagos islands. 
+
+```{r}
+head(gala)
+```
+
+Use lm() to build a model to predict the number of species based on the other 6 variables in the data set. 
+
+2) Use the following code to build a regression tree to predict the number of species based on the other 6 variables in the gala data set.
+```{r}
+gala_tree <- rpart(Species~.,data=gala,method="anova",cp=0)
+```
+
+    a) Use the predict function to obtain the predicted species values using the multiple linear regression model. Compute the resulting mean square error. 
+   
+    b) Use the predict function to obtain the predicted species values using the regression tree model. Compute the resulting mean square error. 
+   
+    c) Which of the two previous models, the multiple linear regression or the regression tree has the lower error? 
+   
+    d) Use 10-fold cross validation to estimate the test-error for the multiple linear regression model and for the regression tree model to predict Species in the gala data set. For example, the following code will perform 10-fold cross-validation for linear regression and tree regression:
+```{r}
+tC <- trainControl(method = "cv",number=10)
+reg_mod <- train(Species~.,data=gala,trControl=tC,method="lm")
+tree_mod <- train(Species~.,data=gala,trControl=tC,method="rpart")
+```
+Which model is more likely to have a higher test error? 
+
+3) The following code implements bagging for a regression tree model to predict the Species variable in the gala data set:
+```{r}
+rf_mod <- randomForest(Species ~., data=gala,mtry=6)
+```
+
+Compare the training error performance of this model with the performance using multiple linear regression a single (*i.e.* not "bagged") regression tree. 
+
+Recall that for a random forest model the out of bag samples provide a means to estimate test error. Thus, the following command will provide a test error estimate for the bagged regression tree:
+```{r}
+mean(rf_mod$mse)
+```
+
+How does the performance of the bagged regression tree compare with that of multiple linear regression and a single regression tree in terms of the estimated test error? 
+
+4) Consider the data generated and plotted in the following code:
+```{r}
+x <- runif(50,-3,3)
+y <- 0.01*rnorm(50)
+
+df <- data.frame(x=x,y=y)
+
+df %>% ggplot(aes(x=x,y=y)) + geom_point() + ylim(-1,1)
+```
+
+    a) Run the command prcomp(df) to produce a principal component analysis for the data contained in the data frame df, assign the result to a variable named pca_result. 
+
+    b) Following how we did in class, compute the variance of each of the two components from the PCA of the data. Then, compute the proportion of variance explained (PVE) by each of the two PCA components for the data. 
+
+    c) Explain, based on the plot of the data, why you expect that the first component of the PCA should explain the overwhelming majjority of the variance in the data. Does this turn out to be true in your calculation of the PVE?  
+
