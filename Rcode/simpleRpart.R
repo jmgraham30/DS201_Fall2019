@@ -60,7 +60,7 @@ iris %>% ggplot(aes(x=Petal.Length,y=Petal.Width,color=Species)) +
 
 
 pred_classes <- predict(c_mod,newdata = iris,type="class")
-
+library(caret)
 confusionMatrix(pred_classes,iris$Species)$table
 
 
