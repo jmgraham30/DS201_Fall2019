@@ -26,6 +26,7 @@ pr_out3$x
 iris_X <- iris %>% dplyr::select(-Species)
 pr_iris <- prcomp(iris_X,center=T,scale=T)
 Z <- as.data.frame(pr_iris$x)
+Z
 names(Z) <- c("Z1","Z2")
 Z$Species <- iris$Species
 
@@ -33,7 +34,10 @@ biplot(pr_iris)
 
 Z %>% ggplot(aes(x=Z1,y=Z2,color=Species)) + geom_point()
 
-autoplot(prcomp(iris[ ,1:4],center=T,scale=T), data = iris,colour = 'Species',frame = TRUE, frame.type = 'norm',loadings.label = TRUE, loadings.label.size = 3)
+autoplot(prcomp(iris[ ,1:4],center=T,scale=T), 
+         data = iris,colour = 'Species',
+         frame = TRUE, frame.type = 'norm',
+         loadings.label = TRUE, loadings.label.size = 3)
 
 (pr_var <- pr_iris$sdev ^2)
 
