@@ -1,5 +1,6 @@
 library(tidyverse)
 library(nnet)
+library(NeuralNetTools)
 library(neuralnet)
 library(caret)
 library(e1071)
@@ -51,13 +52,15 @@ test_results %>% ggplot() + geom_point(aes(x=x,y=y),color="red") +
 
 RMSE(predict(train_nn$finalModel,newdata = df_test_scaled),df_test_scaled$y)
 
+plotnet(train_nn$finalModel)
+
 #####
 tC <- trainControl(method="repeatedcv",number=10,repeats = 5)
 tG <- expand.grid(layer1=c(5,10,15,20,25),layer2=c(5,10,15,20,25),layer3=c(5,10,15,20,25))
 
 #train_nn <- train(y~x,data=df_train_scaled,trControl=tC,tuneGrid=tG,method="neuralnet")
 
-#saveRDS(train_nn,"./Rcode/train_neuralnet.rds")
+saveRDS(train_nn,"./Rcode/train_neuralnet.rds")
 train_nn <- readRDS("./Rcode/train_neuralnet.rds")
 
 train_nn$results
@@ -97,6 +100,8 @@ iris_test$pred <- pred_classes
 iris_test %>% ggplot(aes(x=Petal.Length,y=Petal.Width,color=Species,shape=pred)) + 
   geom_point()
 
+plotnet(iris_nn_trained)
 
+#garson(iris_nn_trained)
 
 
