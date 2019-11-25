@@ -60,7 +60,7 @@ tG <- expand.grid(layer1=c(5,10,15,20,25),layer2=c(5,10,15,20,25),layer3=c(5,10,
 
 #train_nn <- train(y~x,data=df_train_scaled,trControl=tC,tuneGrid=tG,method="neuralnet")
 
-saveRDS(train_nn,"./Rcode/train_neuralnet.rds")
+#saveRDS(train_nn,"./Rcode/train_neuralnet.rds")
 train_nn <- readRDS("./Rcode/train_neuralnet.rds")
 
 train_nn$results
